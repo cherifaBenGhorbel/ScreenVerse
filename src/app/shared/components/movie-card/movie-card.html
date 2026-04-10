@@ -1,0 +1,39 @@
+<div class="movie-card"
+     (mouseenter)="onMouseEnter($event)"
+     (mouseleave)="onMouseLeave()">
+
+  <button
+    type="button"
+    class="favorite-btn"
+    [class.active]="isFavorite()"
+    [attr.aria-label]="isFavorite() ? 'Remove from favorites' : 'Add to favorites'"
+    [title]="isFavorite() ? 'Remove from favorites' : 'Add to favorites'"
+    (click)="toggleFavorite($event)">
+    {{ isFavorite() ? '♥' : '♡' }}
+  </button>
+
+  <a [routerLink]="['/detail', type, item.id]"
+     class="movie-card-link"
+     [attr.aria-label]="'Open details for ' + getTitle()">
+    <div class="poster-container">
+      <img [src]="getPoster()" 
+           [alt]="'Poster for ' + getTitle()" 
+           title="Movie poster"
+           [attr.aria-label]="'Poster for ' + getTitle()"
+           class="poster"
+           loading="lazy">
+      
+      <div class="rating-badge">
+        {{ getRating() }}
+      </div>
+    </div>
+    
+    <div class="card-info">
+      <div class="card-title">{{ getTitle() }}</div>
+      <div class="card-meta">
+        <span>{{ getYear() }}</span>
+        <span class="content-type">{{ type === 'movie' ? 'MOVIE' : 'TV' }}</span>
+      </div>
+    </div>
+  </a>
+</div>

@@ -1,0 +1,85 @@
+<div class="hero">
+  <img
+    class="hero-media"
+    [src]="getBackgroundImage()"
+    [alt]="(item?.title || item?.name || 'Featured title') + ' backdrop image'"
+    title="Featured title backdrop"
+    loading="eager"
+    (error)="onHeroImageError($event)">
+  
+  <div class="hero-overlay"></div>
+  
+  <div class="hero-content">
+    <span class="hero-badge">TRENDING #{{ trending.indexOf(item) + 1 }}</span>
+    
+    <h1 class="hero-title">{{ item?.title || item?.name || 'Loading...' }}</h1>
+    
+    <p class="hero-overview">
+      {{ item?.overview ? (item.overview | slice:0:200) + '...' : 'No overview available.' }}
+    </p>
+    
+    <div class="hero-buttons">
+      <button class="btn-primary" (click)="onPlayTrailer()">
+        <mat-icon>play_arrow</mat-icon>
+        Watch Trailer
+      </button>
+      
+      <a class="btn-secondary" [routerLink]="['/detail', getMediaType(), item?.id]">
+        <mat-icon>info_outline</mat-icon>
+        More Info
+      </a>
+    </div>
+  </div>
+</div>
+
+@if (showTrailerModal()) {
+  <div class="hero-modal-overlay" (click)="closeTrailerModal()">
+    <div
+      #trailerModal
+      class="hero-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="heroTrailerTitle"
+      (click)="$event.stopPropagation()">
+      <button class="close-modal" (click)="closeTrailerModal()" aria-label="Close trailer modal">
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <div class="hero-modal-info">
+        <img [src]="getPoster()" [alt]="(item?.title || item?.name || 'Featured title') + ' poster'" title="Featured title poster" loading="lazy">
+        <div class="hero-modal-text">
+          <h3 id="heroTrailerTitle">{{ item?.title || item?.name }}</h3>
+          <p class="hero-modal-meta">
+            <span>{{ getMediaType() === 'movie' ? 'Movie' : 'TV Series' }}</span>
+            <span>{{ getYear() }}</span>
+            <span>⭐ {{ item?.vote_average?.toFixed(1) || 'N/A' }}</span>
+          </p>
+          <p>{{ item?.overview || 'No overview available.' }}</p>
+          <a [routerLink]="['/detail', getMediaType(), item?.id]" (click)="closeTrailerModal()">Open full details</a>
+        </div>
+      </div>
+
+      <div class="hero-modal-player">
+        @if (isLoadingTrailer()) {
+          <div class="trailer-loading">
+            <div class="spinner"></div>
+            <p>Loading trailer...</p>
+          </div>
+        } @else if (trailerUrl()) {
+          <iframe
+            [src]="trailerUrl()"
+            title="Hero trailer modal player"
+            [attr.aria-label]="(item?.title || item?.name || 'Featured title') + ' trailer'"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        } @else {
+          <div class="trailer-loading">
+            <p>{{ trailerError() }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

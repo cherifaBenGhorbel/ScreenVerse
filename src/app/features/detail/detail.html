@@ -1,0 +1,160 @@
+<div class="detail-page">
+  @if (isLoading()) {
+    <div class="state-card">Loading title details...</div>
+  } @else if (errorMessage()) {
+    <div class="state-card error" role="status" aria-live="polite">
+      <p>{{ errorMessage() }}</p>
+      <button class="retry-btn" type="button" (click)="retryLoad()">Retry</button>
+    </div>
+  } @else if (media()) {
+    <section class="hero" [style.background-image]="'url(https://image.tmdb.org/t/p/original' + (media().backdrop_path || media().poster_path) + ')'">
+      <div class="hero-mask"></div>
+      <div class="hero-content">
+        <div class="hero-meta">
+          <span class="pill">{{ mediaType() === 'movie' ? 'Movie' : 'TV Series' }}</span>
+          <span class="pill">{{ getReleaseYear() }}</span>
+          <span class="pill">⭐ {{ media().vote_average?.toFixed(1) || 'N/A' }}</span>
+          <span class="pill">{{ getRuntimeOrSeasons() }}</span>
+        </div>
+
+        <h1>{{ getTitle() }}</h1>
+        <p>{{ media().overview || 'No overview available for this title.' }}</p>
+
+        <div class="hero-actions">
+          <button class="action primary" (click)="toggleFavorite()">
+            {{ isFavorite() ? '♥ Remove Favorite' : '♡ Save Favorite' }}
+          </button>
+          <a class="action secondary" routerLink="/favorites">Open Favorites</a>
+          @if (trailerWatchUrl()) {
+            <a class="action secondary" [href]="trailerWatchUrl()" target="_blank" rel="noopener noreferrer">Watch trailer</a>
+          }
+          <a class="action watch-now" [routerLink]="['/watch', mediaType(), media().id]">Watch now</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <article class="main-column">
+        @if (trailerUrl()) {
+          <div class="panel">
+            <h2>Official Trailer</h2>
+            <div class="trailer-player">
+              <iframe
+                [src]="trailerUrl()"
+                title="Official trailer"
+                [attr.aria-label]="getTitle() + ' trailer'"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+        }
+
+        <div class="panel">
+          <h2>Where to Watch</h2>
+
+          @if (watchRegion()) {
+            <p class="region-label">Region: {{ watchRegionCode() }}</p>
+            @if (mediaType() === 'tv') {
+              <p class="watch-note">For series, season and episode availability can vary by provider and plan.</p>
+            }
+
+            @if (uniqueProviders(watchRegion()?.flatrate).length > 0) {
+              <h3>Included with Subscription</h3>
+              <div class="providers-grid">
+                @for (provider of uniqueProviders(watchRegion()?.flatrate); track provider.provider_id) {
+                  <div class="provider-chip">
+                    <img [src]="providerLogo(provider.logo_path)" [alt]="provider.provider_name + ' logo'" title="Provider logo" loading="lazy">
+                    <span>{{ provider.provider_name }}</span>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (uniqueProviders(watchRegion()?.rent).length > 0) {
+              <h3>Rent</h3>
+              <div class="providers-grid">
+                @for (provider of uniqueProviders(watchRegion()?.rent); track provider.provider_id) {
+                  <div class="provider-chip">
+                    <img [src]="providerLogo(provider.logo_path)" [alt]="provider.provider_name + ' logo'" title="Provider logo" loading="lazy">
+                    <span>{{ provider.provider_name }}</span>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (uniqueProviders(watchRegion()?.buy).length > 0) {
+              <h3>Buy</h3>
+              <div class="providers-grid">
+                @for (provider of uniqueProviders(watchRegion()?.buy); track provider.provider_id) {
+                  <div class="provider-chip">
+                    <img [src]="providerLogo(provider.logo_path)" [alt]="provider.provider_name + ' logo'" title="Provider logo" loading="lazy">
+                    <span>{{ provider.provider_name }}</span>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (watchLink()) {
+              <a class="watch-link" [href]="watchLink()" target="_blank" rel="noopener noreferrer">Open all providers</a>
+              <p class="watch-note">
+                Playback opens on official streaming providers for your region.
+                @if (mediaType() === 'tv') {
+                  Select your season/episode directly on the provider site.
+                }
+              </p>
+            }
+          } @else {
+            <p class="muted">No watch providers available for this title in common regions right now.</p>
+          }
+        </div>
+      </article>
+
+      <aside class="side-column panel">
+        <h2>Title Facts</h2>
+        <div class="facts-list" role="list">
+          <div class="facts-list-item" role="listitem"><span>Language</span><strong>{{ media().original_language?.toUpperCase() || 'N/A' }}</strong></div>
+          <div class="facts-list-item" role="listitem"><span>Spoken</span><strong>{{ getLanguages() }}</strong></div>
+          <div class="facts-list-item" role="listitem"><span>Countries</span><strong>{{ getCountries() }}</strong></div>
+          <div class="facts-list-item" role="listitem"><span>Status</span><strong>{{ media().status || 'N/A' }}</strong></div>
+          <div class="facts-list-item" role="listitem"><span>Date(s)</span><strong>{{ getDateRange() }}</strong></div>
+          @if (mediaType() === 'tv') {
+            <div class="facts-list-item" role="listitem"><span>Episodes</span><strong>{{ getEpisodeCount() }}</strong></div>
+            <div class="facts-list-item" role="listitem"><span>Networks</span><strong>{{ getNetworks() }}</strong></div>
+          } @else {
+            <div class="facts-list-item" role="listitem"><span>Budget</span><strong>{{ formatMoney(media().budget) }}</strong></div>
+            <div class="facts-list-item" role="listitem"><span>Revenue</span><strong>{{ formatMoney(media().revenue) }}</strong></div>
+            <div class="facts-list-item" role="listitem"><span>Studios</span><strong>{{ getStudios() }}</strong></div>
+          }
+          <div class="facts-list-item" role="listitem"><span>Popularity</span><strong>{{ media().popularity ? (media().popularity | number:'1.0-0') : 'N/A' }}</strong></div>
+          <div class="facts-list-item" role="listitem"><span>Votes</span><strong>{{ media().vote_count ? (media().vote_count | number:'1.0-0') : 'N/A' }}</strong></div>
+          @if (imdbUrl()) {
+            <div class="facts-list-item" role="listitem"><span>IMDB</span><a class="fact-link" [href]="imdbUrl()" target="_blank" rel="noopener noreferrer">Open page</a></div>
+          }
+        </div>
+
+        @if (getTopCast().length > 0) {
+          <div class="cast-list">
+            <h3>Top Cast</h3>
+            <div class="cast-chips">
+              @for (actor of getTopCast(); track actor) {
+                <span>{{ actor }}</span>
+              }
+            </div>
+          </div>
+        }
+
+        @if (media().genres?.length > 0) {
+          <div class="genres">
+            @for (genre of media().genres; track genre.id) {
+              <span>{{ genre.name }}</span>
+            }
+          </div>
+        }
+      </aside>
+    </section>
+
+    <a routerLink="/" class="back-btn">← Back to Home</a>
+  }
+</div>

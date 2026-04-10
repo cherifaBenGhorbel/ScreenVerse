@@ -1,0 +1,81 @@
+.favorites-page {
+  min-height: 100vh;
+  padding: 96px 5% 60px;
+  background:
+    radial-gradient(1100px 500px at 80% -10%, rgba(255, 107, 107, 0.14), transparent),
+    radial-gradient(700px 400px at -10% 20%, rgba(229, 9, 20, 0.16), transparent),
+    #0f0f0f;
+  color: #fff;
+}
+
+.favorites-header {
+  margin-bottom: 1.8rem;
+}
+
+.favorites-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  letter-spacing: -0.03em;
+}
+
+.favorites-header p {
+  margin-top: 0.6rem;
+  color: #b8b8b8;
+  max-width: 760px;
+}
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.favorite-card-wrapper {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.remove-favorite {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ececec;
+  padding: 0.45rem 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remove-favorite:hover {
+  background: rgba(229, 9, 20, 0.18);
+  border-color: rgba(229, 9, 20, 0.45);
+  color: #fff;
+}
+
+.empty-state {
+  margin-top: 2rem;
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.03);
+  max-width: 620px;
+}
+
+.empty-state h2 {
+  margin: 0 0 0.45rem;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #bbbbbb;
+}
+
+@media (max-width: 640px) {
+  .favorites-page {
+    padding: 86px 18px 40px;
+  }
+
+  .favorites-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+  }
+}

@@ -1,0 +1,171 @@
+<div class="watch-page">
+  @if (isLoading()) {
+    <div class="state-card">Loading watch experience...</div>
+  } @else if (errorMessage()) {
+    <div class="state-card error" role="status" aria-live="polite">
+      <p>{{ errorMessage() }}</p>
+      <a class="retry-btn" [routerLink]="['/detail', mediaType(), mediaId()]">Back to details</a>
+    </div>
+  } @else {
+    <header class="watch-header">
+      <h1>Watch: {{ title() }}</h1>
+      <p>Use the watch page with season and episode selection when available.</p>
+      <a class="back-link" [routerLink]="['/detail', mediaType(), mediaId()]">← Back to details</a>
+    </header>
+
+    <section class="watch-layout">
+      <article class="video-panel panel">
+        <h2>Watch Area</h2>
+        <div class="server-switcher" aria-label="Choose watch server">
+          <button
+            type="button"
+            class="server-button"
+            [class.active]="selectedServer() === 1"
+            (click)="selectServer(1)">
+            Server 1
+          </button>
+          <button
+            type="button"
+            class="server-button"
+            [class.active]="selectedServer() === 2"
+            (click)="selectServer(2)">
+            Server 2
+          </button>
+          <button
+            type="button"
+            class="server-button"
+            [class.active]="selectedServer() === 3"
+            (click)="selectServer(3)">
+            Server 3
+          </button>
+          <button
+            type="button"
+            class="server-button"
+            [class.active]="selectedServer() === 4"
+            (click)="selectServer(4)">
+            Server 4
+          </button>
+        </div>
+        @if (watchUrl()) {
+          <div class="video-frame">
+            <iframe
+              [src]="watchUrl()"
+              title="Watch page"
+              [attr.aria-label]="title() + ' watch page'"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+        } @else {
+          <p class="muted">Select a season and episode to load the watch page.</p>
+        }
+
+        @if (watchLink()) {
+          <a class="watch-now" [href]="watchLink()" target="_blank" rel="noopener noreferrer">Open provider watch page</a>
+          <p class="muted small">This opens the official provider for your region.</p>
+        }
+
+
+      </article>
+
+      <aside class="controls-panel panel">
+        <h2>Watch Controls</h2>
+
+        @if (mediaType() === 'tv') {
+          <label class="control-label" for="seasonSelect">Season</label>
+          <select
+            id="seasonSelect"
+            class="control-select"
+            [value]="selectedSeason() || ''"
+            (change)="changeSeason(+$any($event.target).value)">
+            @for (season of seasons(); track season.id || season.season_number) {
+              <option [value]="season.season_number">Season {{ season.season_number }} - {{ season.name || 'Untitled' }}</option>
+            }
+          </select>
+
+          @if (episodes().length > 0) {
+            <div class="episode-list" role="list" aria-label="Episodes">
+              @for (episode of episodes(); track episode.episode_number) {
+                <button
+                  class="episode-item"
+                  type="button"
+                  role="listitem"
+                  [class.active]="selectedEpisode()?.episode_number === episode.episode_number"
+                  (click)="chooseEpisode(episode)">
+                  E{{ episode.episode_number }} - {{ episode.name || 'Untitled episode' }}
+                </button>
+              }
+            </div>
+          }
+
+          @if (selectedEpisode()) {
+            <div class="episode-preview">
+              <h3>Episode Preview</h3>
+              <p><strong>{{ selectedEpisode()!.name }}</strong></p>
+              @if (selectedEpisode()!.air_date) {
+                <p class="muted">Air date: {{ selectedEpisode()!.air_date }}</p>
+              }
+              @if (selectedEpisode()!.runtime) {
+                <p class="muted">Runtime: {{ selectedEpisode()!.runtime }} min</p>
+              }
+              @if (selectedEpisode()!.overview) {
+                <p>{{ selectedEpisode()!.overview }}</p>
+              }
+              @if (selectedEpisode()!.still_path) {
+                <img [src]="episodeImage(selectedEpisode()!.still_path)" [alt]="selectedEpisode()!.name + ' still image'" title="Episode still image" loading="lazy">
+              }
+            </div>
+          }
+        } @else {
+          <p class="muted">This title is a movie, so there are no season or episode controls.</p>
+        }
+      </aside>
+    </section>
+
+    <section class="panel providers-panel">
+      <h2>Where to Watch</h2>
+      @if (watchRegion()) {
+        <p class="muted">Region: {{ watchRegionCode() }}</p>
+
+        @if (uniqueProviders(watchRegion()?.flatrate).length > 0) {
+          <h3>Subscription</h3>
+          <div class="providers-grid">
+            @for (provider of uniqueProviders(watchRegion()?.flatrate); track provider.provider_id) {
+              <div class="provider-chip">
+                <img [src]="providerLogo(provider.logo_path)" [alt]="provider.provider_name + ' logo'" title="Provider logo" loading="lazy">
+                <span>{{ provider.provider_name }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        @if (uniqueProviders(watchRegion()?.rent).length > 0) {
+          <h3>Rent</h3>
+          <div class="providers-grid">
+            @for (provider of uniqueProviders(watchRegion()?.rent); track provider.provider_id) {
+              <div class="provider-chip">
+                <img [src]="providerLogo(provider.logo_path)" [alt]="provider.provider_name + ' logo'" title="Provider logo" loading="lazy">
+                <span>{{ provider.provider_name }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        @if (uniqueProviders(watchRegion()?.buy).length > 0) {
+          <h3>Buy</h3>
+          <div class="providers-grid">
+            @for (provider of uniqueProviders(watchRegion()?.buy); track provider.provider_id) {
+              <div class="provider-chip">
+                <img [src]="providerLogo(provider.logo_path)" [alt]="provider.provider_name + ' logo'" title="Provider logo" loading="lazy">
+                <span>{{ provider.provider_name }}</span>
+              </div>
+            }
+          </div>
+        }
+      } @else {
+        <p class="muted">No providers found for this title right now.</p>
+      }
+    </section>
+  }
+</div>

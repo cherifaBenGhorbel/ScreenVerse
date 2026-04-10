@@ -1,0 +1,71 @@
+<div class="catalog-page">
+  <div class="catalog-header">
+    <h1>Popular Movies</h1>
+    <p class="catalog-subtitle">Top films people are watching this week</p>
+  </div>
+
+  <section class="catalog-filters" aria-label="Movies filters">
+    <div class="filter-group">
+      <label class="filter-label" for="movieGenre">Genre</label>
+      <select id="movieGenre" class="filter-select" [value]="selectedGenre()" (change)="selectedGenre.set($any($event.target).value); applyFilters()">
+        @for (option of genreOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label" for="movieRating">Rating</label>
+      <select id="movieRating" class="filter-select" [value]="selectedRating()" (change)="selectedRating.set($any($event.target).value); applyFilters()">
+        @for (option of ratingOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label" for="movieCountry">Country</label>
+      <select id="movieCountry" class="filter-select" [value]="selectedCountry()" (change)="selectedCountry.set($any($event.target).value); applyFilters()">
+        @for (option of countryOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <button class="filter-reset" type="button" (click)="resetFilters()" [disabled]="!hasActiveFilters()">Reset filters</button>
+  </section>
+
+  @if (isLoading()) {
+    <div class="catalog-loading">Loading movies...</div>
+  } @else if (movies().length > 0) {
+    <div class="catalog-grid">
+      @for (movie of movies(); track movie.id) {
+        <app-movie-card [item]="movie" [type]="'movie'"></app-movie-card>
+      }
+    </div>
+
+    <nav class="catalog-pagination" aria-label="Movies pagination">
+      <button class="page-btn" type="button" (click)="prevPage()" [disabled]="currentPage() === 1 || isLoading()">Previous</button>
+
+      <div class="page-list">
+        @for (page of pageWindow(); track page) {
+          <button
+            class="page-btn page-number"
+            type="button"
+            [class.active]="page === currentPage()"
+            [attr.aria-current]="page === currentPage() ? 'page' : null"
+            (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        }
+      </div>
+
+      <button class="page-btn" type="button" (click)="nextPage()" [disabled]="currentPage() === totalPages() || isLoading()">Next</button>
+    </nav>
+  } @else {
+    <div class="catalog-empty state-card error" role="status" aria-live="polite">
+      <p>{{ errorMessage() || 'No movies to show right now.' }}</p>
+      <button class="retry-btn" type="button" (click)="retryLoad()">Retry</button>
+    </div>
+  }
+</div>

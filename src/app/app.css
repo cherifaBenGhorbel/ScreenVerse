@@ -1,0 +1,177 @@
+:host {
+  display: block;
+
+  --bg-app: #0f0f0f;
+  --bg-surface: #141414;
+  --bg-card: #1a1a1a;
+  --text-primary: #f5f5f5;
+  --text-secondary: #c8c8c8;
+  --text-muted: #9e9e9e;
+  --border-soft: rgba(255, 255, 255, 0.14);
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+:host-context(body[data-theme='light']) {
+  --bg-app: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --text-primary: #111111;
+  --text-secondary: #2c2c2c;
+  --text-muted: #505050;
+  --border-soft: rgba(0, 0, 0, 0.14);
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.main-content {
+  min-height: calc(100vh - 140px);
+  padding-top: 70px;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.offline-banner {
+  position: sticky;
+  top: 70px;
+  z-index: 999;
+  margin: 0 auto;
+  width: fit-content;
+  max-width: min(92vw, 980px);
+  background: rgba(214, 40, 40, 0.16);
+  border: 1px solid rgba(214, 40, 40, 0.45);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 10px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  animation: offlineSlideIn 240ms ease-out;
+}
+
+:host-context(body[data-theme='light']) .offline-banner {
+  background: rgba(214, 40, 40, 0.08);
+  border-color: rgba(214, 40, 40, 0.38);
+  color: #8b1111;
+}
+
+@keyframes offlineSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Global readability layer for app sections in both themes. */
+:host ::ng-deep .section,
+:host ::ng-deep .mood-section,
+:host ::ng-deep .catalog-page,
+:host ::ng-deep .favorites-page,
+:host ::ng-deep .detail-page {
+  color: var(--text-primary);
+}
+
+:host ::ng-deep .section-subtitle,
+:host ::ng-deep .catalog-subtitle,
+:host ::ng-deep .subtitle,
+:host ::ng-deep .hero-overview,
+:host ::ng-deep .card-meta,
+:host ::ng-deep .result-meta,
+:host ::ng-deep .no-results small,
+:host ::ng-deep .catalog-loading,
+:host ::ng-deep .loading,
+:host ::ng-deep .empty-state p,
+:host ::ng-deep .muted {
+  color: var(--text-muted) !important;
+}
+
+:host ::ng-deep .card-title,
+:host ::ng-deep .result-title,
+:host ::ng-deep .hero-title,
+:host ::ng-deep .detail-content h1,
+:host ::ng-deep .facts-list strong {
+  color: var(--text-primary) !important;
+}
+
+:host ::ng-deep .movie-card,
+:host ::ng-deep .card-info,
+:host ::ng-deep .panel,
+:host ::ng-deep .sidebar,
+:host ::ng-deep .hero-modal,
+:host ::ng-deep .search-results,
+:host ::ng-deep .state-card,
+:host ::ng-deep .remove-favorite {
+  border-color: var(--border-soft) !important;
+  box-shadow: var(--shadow-soft);
+}
+
+/* Light theme specific visibility adjustments */
+:host-context(body[data-theme='light']) ::ng-deep .navbar {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-bottom-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+:host-context(body[data-theme='light']) ::ng-deep .search-input,
+:host-context(body[data-theme='light']) ::ng-deep .theme-btn,
+:host-context(body[data-theme='light']) ::ng-deep .nav-links a,
+:host-context(body[data-theme='light']) ::ng-deep .logo {
+  color: #111111 !important;
+}
+
+:host-context(body[data-theme='light']) ::ng-deep .search-input {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.16) !important;
+}
+
+:host-context(body[data-theme='light']) ::ng-deep .search-input::placeholder {
+  color: #565656 !important;
+}
+
+:host-context(body[data-theme='light']) ::ng-deep .search-results,
+:host-context(body[data-theme='light']) ::ng-deep .hero-modal,
+:host-context(body[data-theme='light']) ::ng-deep .panel,
+:host-context(body[data-theme='light']) ::ng-deep .sidebar,
+:host-context(body[data-theme='light']) ::ng-deep .movie-card,
+:host-context(body[data-theme='light']) ::ng-deep .card-info {
+  background: #ffffff !important;
+}
+
+:host-context(body[data-theme='light']) ::ng-deep .section,
+:host-context(body[data-theme='light']) ::ng-deep .mood-section,
+:host-context(body[data-theme='light']) ::ng-deep .catalog-page,
+:host-context(body[data-theme='light']) ::ng-deep .favorites-page,
+:host-context(body[data-theme='light']) ::ng-deep .detail-page {
+  background-color: #ffffff !important;
+  background-image: none !important;
+}
+
+:host-context(body[data-theme='light']) ::ng-deep .hero-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.84) 0%,
+    rgba(255, 255, 255, 0.46) 38%,
+    rgba(255, 255, 255, 0.08) 72%
+  ) !important;
+}
+
+:host-context(body[data-theme='light']) ::ng-deep .hero-title {
+  -webkit-text-fill-color: #111111 !important;
+  background: none !important;
+}
+
+@media (max-width: 580px) {
+  .main-content {
+    padding-top: 132px;
+    min-height: calc(100vh - 120px);
+  }
+
+  .offline-banner {
+    top: 108px;
+    width: min(94vw, 980px);
+    font-size: 0.85rem;
+  }
+}

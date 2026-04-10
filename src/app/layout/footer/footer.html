@@ -1,0 +1,29 @@
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-shell">
+    <section class="footer-brand">
+      <a class="footer-logo" routerLink="/" aria-label="Go to home">
+        <span>Screen</span>Verse
+      </a>
+      <p class="footer-tagline">{{ language.t('footer.tagline') }}</p>
+    </section>
+
+    <nav class="footer-nav" aria-label="Footer links">
+      <h2>{{ language.t('footer.explore') }}</h2>
+      <a routerLink="/">{{ language.t('nav.home') }}</a>
+      <a routerLink="/movies">{{ language.t('nav.movies') }}</a>
+      <a routerLink="/tv-shows">{{ language.t('nav.tvShows') }}</a>
+      <a routerLink="/favorites">{{ language.t('nav.favorites') }}</a>
+    </nav>
+
+    <section class="footer-info">
+      <h2>{{ language.t('footer.important') }}</h2>
+      <p>{{ language.t('footer.disclaimer') }}</p>
+      <p>{{ language.t('footer.dataSource') }}</p>
+    </section>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; {{ currentYear }} ScreenVerse.</p>
+    <p>{{ language.t('footer.rights') }}</p>
+  </div>
+</footer>

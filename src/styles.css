@@ -1,1 +1,443 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global styles and theme tokens */
+
+:root {
+	--app-bg: #0f0f0f;
+	--app-text: #f2f2f2;
+	--title-color: #f8f8f8;
+	--text-secondary: #c7c7c7;
+	--text-muted: #9e9e9e;
+	--surface-1: rgba(255, 255, 255, 0.06);
+	--surface-2: rgba(255, 255, 255, 0.1);
+	--border-soft: rgba(255, 255, 255, 0.18);
+	--accent: #e50914;
+	--elevation-soft: 0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	background: var(--app-bg);
+	color: var(--app-text);
+	transition: background-color 180ms ease, color 180ms ease;
+}
+
+body[data-theme='light'] {
+	--app-bg: #f6f7fb;
+	--app-text: #111111;
+	--title-color: #111111;
+	--text-secondary: #222222;
+	--text-muted: #4b5563;
+	--surface-1: rgba(0, 0, 0, 0.035);
+	--surface-2: rgba(0, 0, 0, 0.07);
+	--border-soft: rgba(0, 0, 0, 0.16);
+	--accent: #d62828;
+	--elevation-soft: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+	background: #f6f7fb;
+	color: #111111;
+}
+
+h1,
+h2,
+h3,
+.hero-title,
+.card-title,
+.result-title {
+	color: var(--title-color);
+}
+
+body[data-theme='light'] h1,
+body[data-theme='light'] h2,
+body[data-theme='light'] h3,
+body[data-theme='light'] .hero-title,
+body[data-theme='light'] .card-title,
+body[data-theme='light'] .result-title {
+	color: #111111 !important;
+}
+
+body:not([data-theme='light']) h1,
+body:not([data-theme='light']) h2,
+body:not([data-theme='light']) h3,
+body:not([data-theme='light']) .hero-title,
+body:not([data-theme='light']) .card-title,
+body:not([data-theme='light']) .result-title {
+	color: #f8f8f8 !important;
+}
+
+body[data-theme='light'] .main-content,
+body[data-theme='light'] .section,
+body[data-theme='light'] .mood-section,
+body[data-theme='light'] .catalog-page,
+body[data-theme='light'] .favorites-page,
+body[data-theme='light'] .detail-page,
+body[data-theme='light'] .watch-page {
+	background: #f9fafd !important;
+	background-image: none !important;
+	color: #111111;
+}
+
+/* Navbar readability */
+body[data-theme='light'] .navbar,
+body[data-theme='light'] .navbar.scrolled {
+	background: rgba(255, 255, 255, 0.96);
+	border-bottom-color: rgba(0, 0, 0, 0.12);
+	box-shadow: 0 2px 14px rgba(0, 0, 0, 0.07);
+}
+
+body[data-theme='light'] .nav-links a,
+body[data-theme='light'] .logo,
+body[data-theme='light'] .search-input,
+body[data-theme='light'] .theme-btn,
+body[data-theme='light'] .search-icon,
+body[data-theme='light'] .clear-btn {
+	color: #111827 !important;
+}
+
+/* Search and dropdown readability */
+body[data-theme='light'] .search-input {
+	background: #fcfdff;
+	border-color: rgba(0, 0, 0, 0.18);
+	box-shadow: none;
+}
+
+body[data-theme='light'] .search-input:focus {
+	border-color: #d62828;
+	box-shadow: 0 0 0 3px rgba(214, 40, 40, 0.18);
+}
+
+body[data-theme='light'] .search-input::placeholder {
+	color: #5f6368;
+}
+
+body[data-theme='light'] .search-results {
+	background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%);
+	border-color: rgba(0, 0, 0, 0.14);
+	box-shadow: var(--elevation-soft);
+}
+
+body[data-theme='light'] .search-result-item {
+	border-bottom-color: rgba(0, 0, 0, 0.09);
+}
+
+body[data-theme='light'] .result-title,
+body[data-theme='light'] .no-results p,
+body[data-theme='light'] .hero-modal-text p,
+body[data-theme='light'] .provider-chip span,
+body[data-theme='light'] .card-title,
+body[data-theme='light'] .facts-list strong {
+	color: #111111;
+}
+
+body[data-theme='light'] .result-meta,
+body[data-theme='light'] .card-meta,
+body[data-theme='light'] .section-subtitle,
+body[data-theme='light'] .catalog-subtitle,
+body[data-theme='light'] .subtitle,
+body[data-theme='light'] .hero-overview,
+body[data-theme='light'] .muted,
+body[data-theme='light'] .no-results small,
+body[data-theme='light'] .catalog-loading,
+body[data-theme='light'] .loading,
+body[data-theme='light'] .empty-state p,
+body[data-theme='light'] .facts-list span {
+	color: #4b5563 !important;
+}
+
+/* Cards and surfaces */
+body[data-theme='light'] .movie-card,
+body[data-theme='light'] .card-info,
+body[data-theme='light'] .btn-secondary,
+body[data-theme='light'] .panel,
+body[data-theme='light'] .state-card,
+body[data-theme='light'] .sidebar,
+body[data-theme='light'] .provider-chip,
+body[data-theme='light'] .remove-favorite,
+body[data-theme='light'] .hero-modal,
+body[data-theme='light'] .episode-item,
+body[data-theme='light'] .control-select {
+	background: #ffffff;
+	border-color: rgba(0, 0, 0, 0.14);
+	box-shadow: var(--elevation-soft);
+	color: #111111;
+}
+
+body[data-theme='light'] .catalog-filters {
+	background: #ffffff;
+	border-color: rgba(0, 0, 0, 0.14);
+}
+
+body[data-theme='light'] .filter-label {
+	color: #4b5563;
+}
+
+body[data-theme='light'] .filter-select {
+	background: #ffffff;
+	border-color: rgba(0, 0, 0, 0.16);
+	color: #111111;
+	background-image:
+		linear-gradient(45deg, transparent 50%, rgba(17, 17, 17, 0.72) 50%),
+		linear-gradient(135deg, rgba(17, 17, 17, 0.72) 50%, transparent 50%);
+}
+
+body[data-theme='light'] .filter-select option {
+	background: #ffffff;
+	color: #111111;
+}
+
+/* Subtle animations with reduced-motion safety */
+@media (prefers-reduced-motion: no-preference) {
+	body {
+		animation: themeFadeIn 180ms ease-out;
+	}
+
+	.hero-content,
+	.catalog-header,
+	.favorites-header,
+	.detail-page .hero-content {
+		animation: riseIn 320ms ease-out;
+	}
+}
+
+@keyframes themeFadeIn {
+	from { opacity: 0.98; }
+	to { opacity: 1; }
+}
+
+@keyframes riseIn {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+body[data-theme='light'] .content-type {
+	background: rgba(214, 40, 40, 0.12);
+	color: #b42318 !important;
+}
+
+/* Hero readability on bright backgrounds */
+body[data-theme='light'] .hero-overlay {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.86) 0%,
+		rgba(255, 255, 255, 0.5) 38%,
+		rgba(255, 255, 255, 0.08) 72%
+	);
+}
+
+body[data-theme='light'] .hero-title {
+	-webkit-text-fill-color: #111111;
+	color: #111111;
+	background: none;
+}
+
+/* Keep controls visible in both themes */
+.nav-btn,
+.theme-btn,
+.favorite-btn,
+.close-modal,
+.close-btn,
+.btn-primary,
+.btn-secondary {
+	outline-color: transparent;
+}
+
+.nav-btn:focus-visible,
+.theme-btn:focus-visible,
+.favorite-btn:focus-visible,
+.close-modal:focus-visible,
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+.catalog-empty {
+	margin: 0 auto;
+	max-width: 720px;
+}
+
+.catalog-filters {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+	gap: 0.9rem;
+	align-items: end;
+	margin: 0 0 1.4rem;
+	padding: 1.05rem;
+	border: 1px solid var(--border-soft);
+	border-radius: 18px;
+	background: var(--surface-1);
+	box-shadow: var(--elevation-soft);
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
+}
+
+.filter-group {
+	display: grid;
+	gap: 0.35rem;
+	min-width: 0;
+}
+
+.filter-label {
+	font-size: 0.8rem;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	color: var(--text-secondary);
+}
+
+.filter-select {
+	width: 100%;
+	padding: 0.78rem 2.3rem 0.78rem 0.88rem;
+	border-radius: 14px;
+	border: 1px solid var(--border-soft);
+	background: rgba(255, 255, 255, 0.06);
+	color: var(--app-text);
+	font: inherit;
+	font-weight: 600;
+	outline: none;
+	transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease, transform 120ms ease;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	background-image:
+		linear-gradient(45deg, transparent 50%, rgba(255, 255, 255, 0.88) 50%),
+		linear-gradient(135deg, rgba(255, 255, 255, 0.88) 50%, transparent 50%);
+	background-position:
+		calc(100% - 18px) calc(50% - 2px),
+		calc(100% - 12px) calc(50% - 2px);
+	background-size: 6px 6px, 6px 6px;
+	background-repeat: no-repeat;
+}
+
+.filter-select:hover {
+	border-color: rgba(229, 9, 20, 0.42);
+}
+
+.filter-select:focus {
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.16);
+	transform: translateY(-1px);
+}
+
+.filter-select option {
+	background: #141414;
+	color: #ffffff;
+}
+
+.filter-reset {
+	justify-self: start;
+	padding: 0.78rem 1rem;
+	border-radius: 14px;
+	border: 1px solid rgba(229, 9, 20, 0.45);
+	background: rgba(229, 9, 20, 0.14);
+	color: var(--app-text);
+	font-weight: 700;
+	cursor: pointer;
+	transition: background-color 160ms ease, border-color 160ms ease, transform 120ms ease;
+}
+
+.filter-reset:hover:not(:disabled) {
+	background: rgba(229, 9, 20, 0.22);
+	border-color: rgba(229, 9, 20, 0.68);
+}
+
+.filter-reset:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+	.catalog-filters {
+		grid-template-columns: 1fr;
+	}
+
+	.filter-reset {
+		justify-self: stretch;
+	}
+}
+
+.catalog-pagination {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.6rem;
+	margin-top: 1.2rem;
+	flex-wrap: wrap;
+}
+
+.page-list {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	flex-wrap: wrap;
+}
+
+.page-btn {
+	padding: 0.42rem 0.72rem;
+	border-radius: 10px;
+	border: 1px solid var(--border-soft);
+	background: var(--surface-1);
+	color: var(--app-text);
+	cursor: pointer;
+	font-weight: 600;
+	transition: background-color 160ms ease, border-color 160ms ease, transform 120ms ease;
+}
+
+.page-btn:hover:not(:disabled) {
+	background: var(--surface-2);
+	border-color: rgba(229, 9, 20, 0.45);
+}
+
+.page-btn:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+.page-btn.page-number {
+	min-width: 2.2rem;
+}
+
+.page-btn.active {
+	background: rgba(229, 9, 20, 0.2);
+	border-color: rgba(229, 9, 20, 0.6);
+}
+
+.page-btn:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+.state-card p {
+	margin: 0;
+}
+
+.retry-btn {
+	margin-top: 0.8rem;
+	padding: 0.52rem 0.95rem;
+	border-radius: 10px;
+	border: 1px solid rgba(229, 9, 20, 0.55);
+	background: rgba(229, 9, 20, 0.16);
+	color: var(--app-text);
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color 180ms ease, border-color 180ms ease, transform 120ms ease;
+}
+
+.retry-btn:hover {
+	background: rgba(229, 9, 20, 0.24);
+	border-color: rgba(229, 9, 20, 0.7);
+}
+
+.retry-btn:active {
+	transform: translateY(1px);
+}
+
+.retry-btn:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}

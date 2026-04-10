@@ -1,0 +1,36 @@
+<div class="trailer-overlay" (click)="close.emit()">
+      <div class="trailer-modal" (click)="$event.stopPropagation()">
+        <div class="trailer-header">
+          <h3>{{ item?.title || item?.name }}</h3>
+          <button class="close-btn" (click)="close.emit()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        
+        <div class="trailer-container">
+          @if (trailerUrl) {
+            <iframe 
+              [src]="trailerUrl"
+              title="Trailer player"
+              [attr.aria-label]="(item?.title || item?.name || 'Trailer') + ' trailer'"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          } @else if (loading) {
+            <div class="loading-container">
+              <mat-spinner diameter="50"></mat-spinner>
+              <p>Loading trailer...</p>
+            </div>
+          } @else {
+            <div class="no-trailer">
+              <mat-icon>videocam_off</mat-icon>
+              <p>No trailer available for this title</p>
+              <button class="btn-secondary" [routerLink]="['/detail', type, item?.id]">
+                View Details
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </div>

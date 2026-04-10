@@ -1,0 +1,22 @@
+<div class="favorites-page">
+  <header class="favorites-header">
+    <h1>Your Favorites</h1>
+    <p>Saved in this browser using cookies so you can quickly return to movies and shows you love.</p>
+  </header>
+
+  @if (favorites().length > 0) {
+    <div class="favorites-grid">
+      @for (item of favorites(); track item.media_type + '-' + item.id) {
+        <div class="favorite-card-wrapper">
+          <app-movie-card [item]="item" [type]="item.media_type"></app-movie-card>
+          <button class="remove-favorite" (click)="remove(item)">Remove</button>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <h2>No favorites yet</h2>
+      <p>Tap the heart button on any title card to save it here.</p>
+    </div>
+  }
+</div>

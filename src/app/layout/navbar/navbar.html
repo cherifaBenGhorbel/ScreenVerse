@@ -1,0 +1,100 @@
+<nav class="navbar" [class.scrolled]="isScrolled()">
+  <div class="nav-container">
+    <a routerLink="/" class="logo">
+      <span class="logo-red">Screen</span>Verse
+    </a>
+
+    <div class="nav-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ language.t('nav.home') }}</a>
+      <a routerLink="/movies" routerLinkActive="active">{{ language.t('nav.movies') }}</a>
+      <a routerLink="/tv-shows" routerLinkActive="active">{{ language.t('nav.tvShows') }}</a>
+      <a routerLink="/favorites" routerLinkActive="active">{{ language.t('nav.favorites') }} @if (getFavoritesCount() > 0) {<span>({{ getFavoritesCount() }})</span>}</a>
+    </div>
+
+    <div class="search-container">
+      <div class="search-wrapper">
+        <span class="search-icon">
+          <mat-icon>search</mat-icon>
+        </span>
+
+        <input
+          type="text"
+          aria-label="Search"
+          title="{{ language.t('nav.searchAria') }}"
+          placeholder="{{ language.t('nav.searchPlaceholder') }}"
+          [value]="searchQuery()"
+          (input)="onSearch($event)"
+          (keyup.enter)="performSearch()"
+          class="search-input">
+
+        @if (searchQuery().trim().length > 0) {
+          <button class="clear-btn" (click)="clearSearch()" mat-icon-button [attr.aria-label]="language.t('nav.clearSearch')" [title]="language.t('nav.clearSearch')">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+
+        @if (isSearching()) {
+          <mat-spinner diameter="18" class="search-spinner"></mat-spinner>
+        }
+      </div>
+
+      @if (searchQuery().trim().length >= 2) {
+        <div class="search-results">
+          @if (isSearching()) {
+            <div class="search-loading">
+              <mat-spinner diameter="24"></mat-spinner>
+              <span>{{ language.t('nav.searching') }}</span>
+            </div>
+          } @else if (searchResults().length > 0) {
+            @for (result of searchResults(); track result.id) {
+              <button
+                type="button"
+                class="search-result-item"
+                (click)="goToDetail(result)"
+                [attr.aria-label]="'Open details for ' + (result.title || result.name)">
+                <img [src]="getPoster(result)"
+                     [alt]="result.title || result.name"
+                     title="Search result poster"
+                     class="result-poster">
+                <div class="result-info">
+                  <div class="result-title">{{ result.title || result.name }}</div>
+                  <div class="result-meta">
+                    {{ mediaLabel(result) }} •
+                    {{ (result.release_date || result.first_air_date || 'N/A').substring(0, 4) }}
+                  </div>
+                </div>
+              </button>
+            }
+          } @else {
+            <div class="no-results">
+              <mat-icon class="no-results-icon">search_off</mat-icon>
+              <p>{{ language.t('nav.noResults') }} "<strong>{{ searchQuery() }}</strong>"</p>
+              <small>{{ language.t('nav.tryAgain') }}</small>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="nav-actions">
+      <button
+        mat-icon-button
+        class="lang-btn"
+        (click)="toggleLanguage()"
+        [attr.aria-label]="isFrench() ? language.t('nav.switchToEnglishAria') : language.t('nav.switchToFrenchAria')"
+        [title]="isFrench() ? language.t('nav.switchToEnglishAria') : language.t('nav.switchToFrenchAria')">
+        {{ isFrench() ? language.t('nav.switchToEnglish') : language.t('nav.switchToFrench') }}
+      </button>
+
+      <button
+        mat-icon-button
+        class="theme-btn"
+        (click)="toggleTheme()"
+        [attr.aria-label]="isLightTheme() ? language.t('nav.darkTheme') : language.t('nav.lightTheme')"
+        [title]="isLightTheme() ? language.t('nav.darkTheme') : language.t('nav.lightTheme')">
+        <mat-icon>{{ isLightTheme() ? 'dark_mode' : 'light_mode' }}</mat-icon>
+      </button>
+    </div>
+
+  </div>
+</nav>

@@ -1,0 +1,244 @@
+/* ====================== HOME - CAROUSEL WITH NAVIGATION ====================== */
+
+/* Base Section Styling */
+.section {
+  padding: 4rem 5% 3rem;
+  background: linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 100%);
+  position: relative;
+}
+
+.section-state {
+  padding-top: 96px;
+}
+
+/* Section Headers - FULLY VISIBLE */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.section-header h2 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.5rem;
+}
+
+.section-header h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #e50914, #ff6b6b, transparent);
+  border-radius: 3px;
+}
+
+.section-subtitle {
+  color: #888;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  font-weight: 400;
+  display: block;
+}
+
+/* Carousel Container */
+.carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Carousel Wrapper */
+.carousel-wrapper {
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  flex: 1;
+  border-radius: 12px;
+}
+
+.carousel-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+/* Carousel - Horizontal Scroll */
+.carousel {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0.5rem 0.25rem 1rem;
+}
+
+.carousel > * {
+  flex-shrink: 0;
+  width: 200px;
+}
+
+/* Navigation Buttons */
+.nav-btn {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.carousel-container:hover .nav-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.carousel-container:focus-within .nav-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.nav-btn:hover {
+  background: #e50914;
+  transform: scale(1.1);
+  border-color: #e50914;
+}
+
+.nav-btn.prev {
+  left: -20px;
+}
+
+.nav-btn.next {
+  right: -20px;
+}
+
+/* Disabled state */
+.nav-btn.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ====================== MOOD SECTION ====================== */
+
+.mood-section {
+  padding: 5rem 5% 4rem;
+  background: radial-gradient(circle at 20% 30%, rgba(229, 9, 20, 0.05) 0%, #0a0a0a 70%);
+  position: relative;
+}
+
+.mood-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #e50914, #ff6b6b, #e50914, transparent);
+}
+
+.mood-pills {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 2rem 0;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.mood-pill {
+  background: linear-gradient(135deg, rgba(30, 30, 40, 0.9) 0%, rgba(20, 20, 30, 0.95) 100%);
+  color: #e0e0e0;
+  padding: 0.875rem 2rem;
+  border-radius: 60px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.mood-pill:hover {
+  transform: translateY(-2px);
+  border-color: rgba(229, 9, 20, 0.6);
+  color: #fff;
+  box-shadow: 0 10px 20px -8px rgba(229, 9, 20, 0.3);
+}
+
+.mood-pill.active {
+  background: linear-gradient(135deg, #e50914 0%, #b80710 100%);
+  color: white;
+  border-color: #e50914;
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .section {
+    padding: 2.5rem 4% 2rem;
+  }
+  
+  .carousel {
+    gap: 1rem;
+  }
+  
+  .carousel > * {
+    width: 160px;
+  }
+  
+  .nav-btn {
+    width: 32px;
+    height: 32px;
+    opacity: 0.92;
+    pointer-events: auto;
+  }
+  
+  .nav-btn.prev {
+    left: -12px;
+  }
+  
+  .nav-btn.next {
+    right: -12px;
+  }
+  
+  .mood-pill {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel > * {
+    width: 140px;
+  }
+  
+  .carousel {
+    gap: 0.875rem;
+  }
+  
+  .section-header h2 {
+    font-size: 1.25rem;
+  }
+}

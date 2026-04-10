@@ -1,0 +1,44 @@
+.catalog-page {
+  padding: 92px 40px 60px;
+  background: radial-gradient(circle at 12% 8%, rgba(229, 9, 20, 0.08), transparent 38%), #141414;
+  min-height: 100vh;
+  color: #fff;
+}
+
+.catalog-header {
+  margin-bottom: 42px;
+}
+
+.catalog-header h1 {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.02em;
+}
+
+.catalog-subtitle {
+  margin: 0;
+  color: #b8b8b8;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+.catalog-loading {
+  text-align: center;
+  color: #8d8d8d;
+  padding: 90px 0;
+}
+
+@media (max-width: 640px) {
+  .catalog-page {
+    padding: 84px 18px 42px;
+  }
+
+  .catalog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
