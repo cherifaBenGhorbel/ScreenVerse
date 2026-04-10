@@ -52,3 +52,5 @@ Thumbs.db
 # Environment configs (keep secrets out of git)
 /src/environments/environment*.ts
 !/src/environments/environment.example.ts
+!/src/environments/environment.ts
+!/src/environments/environment.prod.ts
