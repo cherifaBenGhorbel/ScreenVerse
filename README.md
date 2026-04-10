@@ -1,59 +1,118 @@
-# MoviePlatform
+# ScreenVerse (Movie Platform)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.6.
+ScreenVerse is a modern Angular movie and TV discovery platform powered by TMDB data.
 
-## Development server
+It includes rich content browsing, detail pages, watch-provider data, a watch page with server switching, favorites, bilingual UI (English/French), dark/light themes, and responsive layouts designed for desktop, tablet, and mobile.
 
-To start a local development server, run:
+## Tech Stack
 
-```bash
-ng serve
+- Angular 21 (standalone components, lazy routes)
+- TypeScript
+- Angular Material (icons/spinner/buttons)
+- TMDB API
+- Signal-based state management
+
+## Main Features
+
+- Home page with curated sections and hero content
+- Movies and TV Shows pages with:
+	- genre filter
+	- rating filter
+	- country filter
+	- pagination
+- Detail page with trailers, metadata, cast, and provider info
+- Watch page:
+	- movie and TV watch URL generation
+	- TV season and episode selection
+	- 4 server buttons (Server 1-4)
+- Favorites management
+- Theme toggle (dark/light)
+- Language toggle (EN/FR)
+- Offline banner and resilient loading/error states
+
+## Project Structure
+
+```text
+src/
+	app/
+		core/services/
+			tmdb.ts
+			favorites.ts
+			theme.ts
+			language.ts
+		features/
+			home/
+			movies/
+			tv-shows/
+			detail/
+			watch/
+			favorites/
+		layout/
+			navbar/
+			footer/
+		shared/
+			components/
+			pipes/
+		models/
+	environments/
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Getting Started
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### 1. Install dependencies
 
 ```bash
-ng generate component component-name
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### 2. Configure environment files
+
+Environment files are ignored by git for security.
+
+Create these files from the example:
+
+- `src/environments/environment.ts`
+- `src/environments/environment.prod.ts`
+
+You can copy from `src/environments/environment.example.ts` and fill in your real values:
+
+- `tmdb.apiKey`
+- `tmdb.accessToken`
+- `tmdb.siteUrl1`
+- `tmdb.siteUrl2`
+- `tmdb.siteUrl3`
+- `tmdb.siteUrl4`
+
+### 3. Start development server
 
 ```bash
-ng generate --help
+npm start
 ```
 
-## Building
+Open: `http://localhost:4200`
 
-To build the project run:
+## Available Scripts
+
+- `npm start` -> run development server
+- `npm test` -> run unit tests
+- `npm run build` -> create production build
+
+## Build for Production
 
 ```bash
-ng build
+npm run build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Build output is generated in `dist/`.
 
-## Running unit tests
+## Notes
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- TMDB content and poster metadata are provided by The Movie Database (TMDB).
+- Streaming availability depends on region and provider availability.
+- Keep real API keys/tokens out of git (already enforced via `.gitignore`).
 
-```bash
-ng test
-```
+## Repository
 
-## Running end-to-end tests
+Git remote configured for this project:
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+`https://github.com/cherifaghorbel/movie-platform.git`
