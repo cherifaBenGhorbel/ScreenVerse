@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "check-env": "node scripts/check-env.mjs",
     "prestart": "node scripts/validate-env.mjs && node scripts/write-env.mjs",
     "start": "node scripts/dev.mjs",
     "prebuild": "node scripts/validate-env.mjs && node scripts/write-env.mjs",

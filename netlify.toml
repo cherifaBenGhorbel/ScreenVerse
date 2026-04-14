@@ -2,6 +2,10 @@
   command = "npm run build"
   publish = "dist/movie-platform/browser"
 
+# Build-time context for local development
+[build.environment]
+  # These are defaults; Netlify Site Settings env vars override these
+
 [functions]
   directory = "netlify/functions"
 

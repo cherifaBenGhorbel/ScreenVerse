@@ -1,0 +1,35 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+  <!-- Background circle -->
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e50914;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff5a6a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="screenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.95" />
+      <stop offset="100%" style="stop-color:#e0e0e0;stop-opacity:0.90" />
+    </linearGradient>
+  </defs>
+
+  <!-- Outer circle background -->
+  <circle cx="100" cy="100" r="98" fill="url(#logoGradient)" opacity="0.15" stroke="url(#logoGradient)" stroke-width="2"/>
+
+  <!-- Screen/Frame shape -->
+  <rect x="45" y="50" width="110" height="100" rx="8" fill="url(#screenGradient)" stroke="url(#logoGradient)" stroke-width="2.5"/>
+
+  <!-- Inner screen dark area -->
+  <rect x="50" y="58" width="100" height="80" rx="5" fill="#0a0c12" opacity="0.9"/>
+
+  <!-- Play button (triangle) -->
+  <polygon points="85,80 85,118 125,99" fill="url(#logoGradient)"/>
+
+  <!-- Light accent line (represents motion/film) -->
+  <line x1="50" y1="145" x2="150" y2="145" stroke="url(#logoGradient)" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <line x1="50" y1="152" x2="150" y2="152" stroke="url(#logoGradient)" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+
+  <!-- Corner accents (film strip effect) -->
+  <circle cx="50" cy="50" r="3" fill="url(#logoGradient)"/>
+  <circle cx="150" cy="50" r="3" fill="url(#logoGradient)"/>
+  <circle cx="50" cy="150" r="3" fill="url(#logoGradient)"/>
+  <circle cx="150" cy="150" r="3" fill="url(#logoGradient)"/>
+</svg>

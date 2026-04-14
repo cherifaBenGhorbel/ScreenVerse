@@ -28,6 +28,7 @@ const loadDotEnvFile = (fileName) => {
   }
 };
 
+// Try loading from .env/.env.local (local dev) or process.env (CI/Netlify)
 loadDotEnvFile('.env');
 loadDotEnvFile('.env.local');
 
@@ -40,7 +41,7 @@ const required = [
   'WATCH_SITE_URL4'
 ];
 
-const invalidMarkers = ['REPLACE_ME', 'YOUR_'];
+const invalidMarkers = ['REPLACE_ME', 'YOUR_', 'EXAMPLE'];
 const missing = required.filter((name) => {
   const value = (process.env[name] || '').trim();
   if (!value) return true;

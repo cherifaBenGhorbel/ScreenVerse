@@ -48,14 +48,24 @@ The dev server runs Angular on `http://localhost:4300` and Netlify Functions on 
 - `npm start` starts the local Angular + Netlify workflow.
 - `npm run build` validates environment variables and creates the production build.
 - `npm test` runs the Angular test suite.
+- `npm run check-env` displays which environment variables are detected (for debugging).
 
 ## Netlify Deploy
 
 1. Push the project to GitHub.
 2. Import the repository in Netlify.
-3. Use the settings from [netlify.toml](netlify.toml): build command `npm run build`, publish directory `dist/movie-platform/browser`.
-4. Add the required environment variables in Netlify site settings.
-5. Deploy.
+3. **Before deploying**, go to **Site Settings** → **Environment Variables** and add:
+   - `TMDB_API_KEY`
+   - `TMDB_ACCESS_TOKEN`
+   - `TMDB_BASE_URL`
+   - `TMDB_IMAGE_BASE`
+   - `TMDB_YOUTUBE_EMBED`
+   - `WATCH_SITE_URL1`, `WATCH_SITE_URL2`, `WATCH_SITE_URL3`, `WATCH_SITE_URL4`
+4. Use build command: `npm run build`
+5. Publish directory: `dist/movie-platform/browser`
+6. Deploy.
+
+**📘 Detailed Setup Guide:** See [NETLIFY_SETUP.md](NETLIFY_SETUP.md)
 
 Netlify serves the app shell with SPA fallback and exposes the server-side API routes through Netlify Functions.
 
