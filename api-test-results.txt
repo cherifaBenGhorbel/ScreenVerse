@@ -1,0 +1,38 @@
+
+🧪 Testing Watch Server APIs...
+
+Server | Provider        | URL                                | Status        | Response Time
+-------|-----------------|------------------------------------|---------+-----------
+1     | Cinezo         | https://api.cinezo.net/            | ✅ OK         | 3752ms
+2     | 111Movies      | https://111movies.net/             | ✅ OK         | 2497ms
+3     | VidZen         | https://vidzen.fun/                | ✅ OK         | 9368ms
+4     | VidFast        | https://vidfast.pro/               | ✅ OK         | 4122ms
+5     | VidSrc Embed   | https://vidsrc-embed.ru/           | ✅ OK         | 9771ms
+6     | VidSrc ICU     | https://vidsrc.icu/                | ✅ OK         | 799ms
+7     | VidSrc TO      | https://vidsrc.to/                 | ✅ OK         | 736ms
+8     | CineSrc        | https://cinesrc.st/                | ✅ OK         | 858ms
+9     | MegaEmbed      | https://megaembed.com/embed        | ⚠️ 404       | 1198ms
+10    | EmbedMaster    | https://embedmaster.link/          | ✅ OK         | 985ms
+11    | VSEmbed        | https://vsembed.ru/embed           | ⚠️ 404       | 433ms
+-------|-----------------|------------------------------------|---------+-----------
+
+Summary: 9/11 servers online
+
+📊 Detailed Results:
+
+✅ Working Servers:
+   Server 1: Cinezo - https://api.cinezo.net/
+   Server 2: 111Movies - https://111movies.net/
+   Server 3: VidZen - https://vidzen.fun/
+   Server 4: VidFast - https://vidfast.pro/
+   Server 5: VidSrc Embed - https://vidsrc-embed.ru/
+   Server 6: VidSrc ICU - https://vidsrc.icu/
+   Server 7: VidSrc TO - https://vidsrc.to/
+   Server 8: CineSrc - https://cinesrc.st/
+   Server 10: EmbedMaster - https://embedmaster.link/
+
+❌ Failed/Offline Servers:
+   Server 9: MegaEmbed - ⚠️ 404
+   Server 11: VSEmbed - ⚠️ 404
+
+

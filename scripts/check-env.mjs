@@ -47,7 +47,13 @@ const required = [
   'WATCH_SITE_URL1',
   'WATCH_SITE_URL2',
   'WATCH_SITE_URL3',
-  'WATCH_SITE_URL4'
+  'WATCH_SITE_URL4',
+  'WATCH_SITE_URL5',
+  'WATCH_SITE_URL6',
+  'WATCH_SITE_URL7',
+  'WATCH_SITE_URL8',
+  'WATCH_SITE_URL9',
+  'WATCH_SITE_URL10'
 ];
 
 console.log('\n========== Environment Variables Check ==========\n');

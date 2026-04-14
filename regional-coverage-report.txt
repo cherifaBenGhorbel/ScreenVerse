@@ -1,0 +1,46 @@
+
+Regional Coverage Benchmark (TMDB IDs)
+Samples: 6
+S1 Cinezo       | Turkey         | Ayla: The Daughter of War    | 200     | https://api.cinezo.net/movie/472454
+S2 111Movies    | Turkey         | Ayla: The Daughter of War    | 200     | https://111movies.net/movie/472454
+S3 VidZen       | Turkey         | Ayla: The Daughter of War    | 200     | https://vidzen.fun/movie/472454
+S4 VidFast      | Turkey         | Ayla: The Daughter of War    | 200     | https://vidfast.pro/movie/472454
+S5 2Embed       | Turkey         | Ayla: The Daughter of War    | 200     | https://2embed.cc/embed/movie/472454
+S6 VidSrc ICU   | Turkey         | Ayla: The Daughter of War    | 200     | https://vidsrc.icu/embed/movie/472454
+S7 VidSrc TO    | Turkey         | Ayla: The Daughter of War    | 200     | https://vidsrc.to/embed/movie/472454
+S8 CineSrc      | Turkey         | Ayla: The Daughter of War    | 200     | https://cinesrc.st/embed/movie/472454
+S9 Embtaku      | Turkey         | Ayla: The Daughter of War    | 429     | https://embtaku.pro/movie/472454
+S10 EmbedMaster  | Turkey         | Ayla: The Daughter of War    | 200     | https://embedmaster.link/movie/472454
+S11 VidSrc XYZ   | Turkey         | Ayla: The Daughter of War    | 404     | https://vidsrc.xyz/movie/472454
+S1 Cinezo       | Turkey         | Kurulus Osman S1E1           | 200     | https://api.cinezo.net/tv/95603/1/1
+S2 111Movies    | Turkey         | Kurulus Osman S1E1           | 200     | https://111movies.net/tv/95603/1/1
+S3 VidZen       | Turkey         | Kurulus Osman S1E1           | 200     | https://vidzen.fun/tv/95603/1/1
+S4 VidFast      | Turkey         | Kurulus Osman S1E1           | 200     | https://vidfast.pro/tv/95603/1/1
+S5 2Embed       | Turkey         | Kurulus Osman S1E1           | 200     | https://2embed.cc/embed/tv?tmdb=95603&season=1&episode=1
+S6 VidSrc ICU   | Turkey         | Kurulus Osman S1E1           | 200     | https://vidsrc.icu/embed/tv/95603/1/1
+S7 VidSrc TO    | Turkey         | Kurulus Osman S1E1           | 200     | https://vidsrc.to/embed/tv/95603/1/1
+S8 CineSrc      | Turkey         | Kurulus Osman S1E1           | 200     | https://cinesrc.st/embed/tv/95603?s=1&e=1
+S9 Embtaku      | Turkey         | Kurulus Osman S1E1           | 429     | https://embtaku.pro/tv/95603/1/1
+S10 EmbedMaster  | Turkey         | Kurulus Osman S1E1           | 200     | https://embedmaster.link/tv/95603/1/1
+S11 VidSrc XYZ   | Turkey         | Kurulus Osman S1E1           | 404     | https://vidsrc.xyz/tv/95603/1/1
+S1 Cinezo       | Tunisia/Arabic | Dachra                       | 200     | https://api.cinezo.net/movie/540009
+S2 111Movies    | Tunisia/Arabic | Dachra                       | 200     | https://111movies.net/movie/540009
+S3 VidZen       | Tunisia/Arabic | Dachra                       | 200     | https://vidzen.fun/movie/540009
+S4 VidFast      | Tunisia/Arabic | Dachra                       | 200     | https://vidfast.pro/movie/540009
+S5 2Embed       | Tunisia/Arabic | Dachra                       | 200     | https://2embed.cc/embed/movie/540009
+S6 VidSrc ICU   | Tunisia/Arabic | Dachra                       | 200     | https://vidsrc.icu/embed/movie/540009
+S7 VidSrc TO    | Tunisia/Arabic | Dachra                       | 200     | https://vidsrc.to/embed/movie/540009
+S8 CineSrc      | Tunisia/Arabic | Dachra                       | 200     | https://cinesrc.st/embed/movie/540009
+S9 Embtaku      | Tunisia/Arabic | Dachra                       | 429     | https://embtaku.pro/movie/540009
+S10 EmbedMaster  | Tunisia/Arabic | Dachra                       | 200     | https://embedmaster.link/movie/540009
+S11 VidSrc XYZ   | Tunisia/Arabic | Dachra                       | 404     | https://vidsrc.xyz/movie/540009
+S1 Cinezo       | K-Drama        | Crash Landing on You S1E1    | 200     | https://api.cinezo.net/tv/94796/1/1
+S2 111Movies    | K-Drama        | Crash Landing on You S1E1    | 200     | https://111movies.net/tv/94796/1/1
+S3 VidZen       | K-Drama        | Crash Landing on You S1E1    | 200     | https://vidzen.fun/tv/94796/1/1
+S4 VidFast      | K-Drama        | Crash Landing on You S1E1    | 200     | https://vidfast.pro/tv/94796/1/1
+S5 2Embed       | K-Drama        | Crash Landing on You S1E1    | 200     | https://2embed.cc/embed/tv?tmdb=94796&season=1&episode=1
+S6 VidSrc ICU   | K-Drama        | Crash Landing on You S1E1    | 200     | https://vidsrc.icu/embed/tv/94796/1/1
+S7 VidSrc TO    | K-Drama        | Crash Landing on You S1E1    | 200     | https://vidsrc.to/embed/tv/94796/1/1
+S8 CineSrc      | K-Drama        | Crash Landing on You S1E1    | 200     | https://cinesrc.st/embed/tv/94796?s=1&e=1
+S9 Embtaku      | K-Drama        | Crash Landing on You S1E1    | 429     | https://embtaku.pro/tv/94796/1/1
+S10 EmbedMaster  | K-Drama        | Crash Landing on You S1E1    | 200     | https://embedmaster.link/tv/94796/1/1

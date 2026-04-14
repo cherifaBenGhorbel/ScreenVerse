@@ -42,8 +42,23 @@ const config = {
   apiProxyBaseDev: fromEnv('TMDB_PROXY_BASE_DEV', fromEnv('TMDB_PROXY_BASE', '/api/tmdb')),
   watchProxyBaseDev: fromEnv('WATCH_PROXY_BASE_DEV', fromEnv('WATCH_PROXY_BASE', '/api/watch')),
   apiProxyBaseProd: fromEnv('TMDB_PROXY_BASE_PROD', fromEnv('TMDB_PROXY_BASE', '/.netlify/functions/tmdb')),
-  watchProxyBaseProd: fromEnv('WATCH_PROXY_BASE_PROD', fromEnv('WATCH_PROXY_BASE', '/.netlify/functions/watch'))
+  watchProxyBaseProd: fromEnv('WATCH_PROXY_BASE_PROD', fromEnv('WATCH_PROXY_BASE', '/.netlify/functions/watch')),
+  watchSiteUrls: [
+    fromEnv('WATCH_SITE_URL1'),
+    fromEnv('WATCH_SITE_URL2'),
+    fromEnv('WATCH_SITE_URL3'),
+    fromEnv('WATCH_SITE_URL4'),
+    fromEnv('WATCH_SITE_URL5'),
+    fromEnv('WATCH_SITE_URL6'),
+    fromEnv('WATCH_SITE_URL7'),
+    fromEnv('WATCH_SITE_URL8'),
+    fromEnv('WATCH_SITE_URL9'),
+    fromEnv('WATCH_SITE_URL10'),
+    fromEnv('WATCH_SITE_URL11')
+  ]
 };
+
+const tsWatchSites = config.watchSiteUrls.map((value) => JSON.stringify(value));
 
 const ts = (isProduction) => `export const environment = {
   production: ${isProduction},
@@ -52,7 +67,8 @@ const ts = (isProduction) => `export const environment = {
     youtubeEmbed: ${JSON.stringify(config.youtubeEmbed)},
     apiProxyBase: ${JSON.stringify(config.apiProxyBaseDev)},
     watchProxyBase: ${JSON.stringify(config.watchProxyBaseDev)}
-  }
+  },
+  watchSites: [${tsWatchSites.join(', ')}]
 };
 `;
 
@@ -63,7 +79,8 @@ const tsProd = `export const environment = {
     youtubeEmbed: ${JSON.stringify(config.youtubeEmbed)},
     apiProxyBase: ${JSON.stringify(config.apiProxyBaseProd)},
     watchProxyBase: ${JSON.stringify(config.watchProxyBaseProd)}
-  }
+  },
+  watchSites: [${tsWatchSites.join(', ')}]
 };
 `;
 

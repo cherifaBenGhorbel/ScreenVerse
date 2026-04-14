@@ -28,6 +28,13 @@ Required variables:
 - `WATCH_SITE_URL2`
 - `WATCH_SITE_URL3`
 - `WATCH_SITE_URL4`
+- `WATCH_SITE_URL5`
+- `WATCH_SITE_URL6`
+- `WATCH_SITE_URL7`
+- `WATCH_SITE_URL8`
+- `WATCH_SITE_URL9`
+- `WATCH_SITE_URL10`
+- `WATCH_SITE_URL11`
 
 Optional overrides:
 
@@ -57,9 +64,9 @@ The dev server runs Angular on `http://localhost:4300` and Netlify Functions on 
 3. **⚠️ CRITICAL:** Before deploying, go to **Site Settings** → **Environment Variables** and add **all 6 critical variables** from your `.env` file:
    - `TMDB_API_KEY`
    - `TMDB_ACCESS_TOKEN`
-   - `WATCH_SITE_URL1`, `WATCH_SITE_URL2`, `WATCH_SITE_URL3`, `WATCH_SITE_URL4`
+   - `WATCH_SITE_URL1`, `WATCH_SITE_URL2`, `WATCH_SITE_URL3`, `WATCH_SITE_URL4`, `WATCH_SITE_URL5`, `WATCH_SITE_URL6`, `WATCH_SITE_URL7`, `WATCH_SITE_URL8`, `WATCH_SITE_URL9`, `WATCH_SITE_URL10`, `WATCH_SITE_URL11`
 
-4. Use build command: `npm run build`
+3. Use build command: `npm run build`
 5. Publish directory: `dist/movie-platform/browser`
 6. Click **Trigger Deploy** to start the build.
 

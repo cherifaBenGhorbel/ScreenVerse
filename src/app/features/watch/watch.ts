@@ -25,6 +25,49 @@ interface TvEpisode {
 })
 export class Watch implements OnInit, OnDestroy {
   private readonly watchProxyBase = environment.tmdb.watchProxyBase || '/api/watch';
+  readonly watchServers = [
+    { id: 1, label: 'Server 1', provider: 'Cinezo' },
+    { id: 2, label: 'Server 2', provider: '111Movies' },
+    { id: 3, label: 'Server 3', provider: 'VidZen' },
+    { id: 4, label: 'Server 4', provider: 'VidFast' },
+    { id: 5, label: 'Server 5', provider: '2Embed' },
+    { id: 6, label: 'Server 6', provider: 'VidSrc ICU' },
+    { id: 7, label: 'Server 7', provider: 'VidSrc TO' },
+    { id: 8, label: 'Server 8', provider: 'CineSrc' },
+    { id: 10, label: 'Server 10', provider: 'EmbedMaster' },
+    { id: 9, label: 'Server 9', provider: 'Embtaku' },
+    { id: 11, label: 'Server 11', provider: 'VidSrc XYZ' }
+  ];
+  private readonly vidfastMovieOptionKeys = [
+    'title',
+    'poster',
+    'autoPlay',
+    'startAt',
+    'theme',
+    'server',
+    'hideServer',
+    'fullscreenButton',
+    'chromecast',
+    'sub',
+    'providerServer'
+  ] as const;
+
+  private readonly watchSiteBases = environment.watchSites || [];
+  private readonly vidfastTvOptionKeys = [
+    'title',
+    'poster',
+    'autoPlay',
+    'startAt',
+    'theme',
+    'nextButton',
+    'autoNext',
+    'server',
+    'hideServer',
+    'fullscreenButton',
+    'chromecast',
+    'sub',
+    'providerServer'
+  ] as const;
 
   media = signal<any>(null);
   mediaType = signal<MediaType>('movie');
@@ -164,7 +207,8 @@ export class Watch implements OnInit, OnDestroy {
   }
 
   selectServer(serverNumber: number): void {
-    if (serverNumber < 1 || serverNumber > 4 || this.selectedServer() === serverNumber) return;
+    const maxServerId = this.watchServers.reduce((max, server) => Math.max(max, server.id), 1);
+    if (serverNumber < 1 || serverNumber > maxServerId || this.selectedServer() === serverNumber) return;
 
     this.selectedServer.set(serverNumber);
     this.refreshWatchUrl();
@@ -193,11 +237,96 @@ export class Watch implements OnInit, OnDestroy {
   }
 
   private buildMovieWatchUrl(movieId: number, serverNumber: number): string {
-    return `${this.watchProxyBase}/movie/${movieId}?server=${serverNumber}`;
+    return this.buildWatchTarget(serverNumber, 'movie', movieId).url;
   }
 
   private buildTvWatchUrl(tvId: number, seasonNumber: number, episodeNumber: number, serverNumber: number): string {
-    return `${this.watchProxyBase}/tv/${tvId}/${seasonNumber}/${episodeNumber}?server=${serverNumber}`;
+    return this.buildWatchTarget(serverNumber, 'tv', tvId, seasonNumber, episodeNumber).url;
+  }
+
+  private buildWatchTarget(
+    serverNumber: number,
+    mediaType: 'movie' | 'tv',
+    mediaId: number,
+    seasonNumber?: number,
+    episodeNumber?: number
+  ): { url: string } {
+    const params = new URLSearchParams();
+
+    if (serverNumber === 4) {
+      params.set('autoPlay', 'true');
+
+      const queryMap = this.route.snapshot.queryParamMap;
+      const optionKeys = mediaType === 'tv' ? this.vidfastTvOptionKeys : this.vidfastMovieOptionKeys;
+
+      for (const key of optionKeys) {
+        const value = queryMap.get(key);
+        if (value !== null && value.trim() !== '') {
+          if (key === 'providerServer' && !params.has('server')) {
+            params.set('server', value);
+          } else if (key !== 'providerServer') {
+            params.set(key, value);
+          }
+        }
+      }
+    }
+
+    const base = this.watchSiteBases[serverNumber - 1] || '';
+    if (!base) {
+      return { url: '' };
+    }
+
+    if (serverNumber === 5) {
+      if (mediaType === 'movie') {
+        return { url: `${base.replace(/\/+$/, '')}/embed/movie/${mediaId}${params.toString() ? `?${params.toString()}` : ''}` };
+      }
+
+      if (seasonNumber == null || episodeNumber == null) {
+        return { url: '' };
+      }
+
+      const tvParams = new URLSearchParams(params);
+      tvParams.set('tmdb', String(mediaId));
+      tvParams.set('season', String(seasonNumber));
+      tvParams.set('episode', String(episodeNumber));
+      return { url: `${base.replace(/\/+$/, '')}/embed/tv?${tvParams.toString()}` };
+    }
+
+    if (serverNumber === 6 || serverNumber === 7) {
+      if (mediaType === 'movie') {
+        return { url: `${base.replace(/\/+$/, '')}/embed/movie/${mediaId}${params.toString() ? `?${params.toString()}` : ''}` };
+      }
+
+      if (seasonNumber == null || episodeNumber == null) {
+        return { url: '' };
+      }
+
+      return { url: `${base.replace(/\/+$/, '')}/embed/tv/${mediaId}/${seasonNumber}/${episodeNumber}${params.toString() ? `?${params.toString()}` : ''}` };
+    }
+
+    if (serverNumber === 8) {
+      const cleanBase = base.replace(/\/+$/, '');
+
+      if (mediaType === 'movie') {
+        return { url: `${cleanBase}/embed/movie/${mediaId}` };
+      }
+
+      if (seasonNumber == null || episodeNumber == null) {
+        return { url: '' };
+      }
+
+      return { url: `${cleanBase}/embed/tv/${mediaId}?s=${seasonNumber}&e=${episodeNumber}` };
+    }
+
+    if (mediaType === 'movie') {
+      return { url: `${base.replace(/\/+$/, '')}/movie/${mediaId}${params.toString() ? `?${params.toString()}` : ''}` };
+    }
+
+    if (seasonNumber == null || episodeNumber == null) {
+      return { url: '' };
+    }
+
+    return { url: `${base.replace(/\/+$/, '')}/tv/${mediaId}/${seasonNumber}/${episodeNumber}${params.toString() ? `?${params.toString()}` : ''}` };
   }
 
   private refreshWatchUrl(): void {
@@ -231,6 +360,10 @@ export class Watch implements OnInit, OnDestroy {
       this.watchPlaybackMessage.set('Loading provider...');
       this.playbackTimeoutId = setTimeout(() => {
         if (this.watchPlaybackState() === 'loading') {
+          if (this.tryNextServer('This provider is taking too long. Trying the next server...')) {
+            return;
+          }
+
           this.watchPlaybackState.set('failed');
           this.watchPlaybackMessage.set('This provider may be blocking embedded playback. Open it in a new tab or try another server.');
         }
@@ -251,6 +384,10 @@ export class Watch implements OnInit, OnDestroy {
   onWatchFrameError(): void {
     if (!this.watchPageUrl()) return;
     this.clearPlaybackWatchdog();
+    if (this.tryNextServer('The embedded player could not load on this provider. Trying the next server...')) {
+      return;
+    }
+
     this.watchPlaybackState.set('failed');
     this.watchPlaybackMessage.set('The embedded player could not load. Open the stream in a new tab or switch servers.');
   }
@@ -260,6 +397,26 @@ export class Watch implements OnInit, OnDestroy {
       clearTimeout(this.playbackTimeoutId);
       this.playbackTimeoutId = null;
     }
+  }
+
+  private tryNextServer(message: string): boolean {
+    const currentServerId = this.selectedServer();
+    const currentIndex = this.watchServers.findIndex((server) => server.id === currentServerId);
+
+    if (currentIndex < 0) {
+      return false;
+    }
+
+    const nextServer = this.watchServers[currentIndex + 1];
+    if (!nextServer) {
+      return false;
+    }
+
+    this.watchPlaybackState.set('loading');
+    this.watchPlaybackMessage.set(message);
+    this.selectedServer.set(nextServer.id);
+    this.refreshWatchUrl();
+    return true;
   }
 
   private async loadWatchRecommendations(type: MediaType, id: number): Promise<void> {

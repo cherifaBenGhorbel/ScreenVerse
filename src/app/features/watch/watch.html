@@ -17,34 +17,16 @@
       <article class="video-panel panel">
         <h2>Watch Area</h2>
         <div class="server-switcher" aria-label="Choose watch server">
-          <button
-            type="button"
-            class="server-button"
-            [class.active]="selectedServer() === 1"
-            (click)="selectServer(1)">
-            Server 1
-          </button>
-          <button
-            type="button"
-            class="server-button"
-            [class.active]="selectedServer() === 2"
-            (click)="selectServer(2)">
-            Server 2
-          </button>
-          <button
-            type="button"
-            class="server-button"
-            [class.active]="selectedServer() === 3"
-            (click)="selectServer(3)">
-            Server 3
-          </button>
-          <button
-            type="button"
-            class="server-button"
-            [class.active]="selectedServer() === 4"
-            (click)="selectServer(4)">
-            Server 4
-          </button>
+          @for (server of watchServers; track server) {
+            <button
+              type="button"
+              class="server-button"
+              [class.active]="selectedServer() === server.id"
+              (click)="selectServer(server.id)">
+              <span class="server-label">{{ server.label }}</span>
+              <span class="server-provider">{{ server.provider }}</span>
+            </button>
+          }
         </div>
         @if (watchPlaybackState() === 'failed') {
           <div class="player-fallback" role="status" aria-live="polite">

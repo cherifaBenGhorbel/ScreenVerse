@@ -53,7 +53,14 @@ const required = [
   'WATCH_SITE_URL1',
   'WATCH_SITE_URL2',
   'WATCH_SITE_URL3',
-  'WATCH_SITE_URL4'
+  'WATCH_SITE_URL4',
+  'WATCH_SITE_URL5',
+  'WATCH_SITE_URL6',
+  'WATCH_SITE_URL7',
+  'WATCH_SITE_URL8',
+  'WATCH_SITE_URL9',
+  'WATCH_SITE_URL10',
+  'WATCH_SITE_URL11'
 ];
 
 const invalidMarkers = ['REPLACE_ME', 'YOUR_', 'EXAMPLE'];
@@ -75,7 +82,19 @@ if (missing.length > 0) {
 }
 
 // Validate that WATCH_SITE_URLs are valid HTTP(S) URLs
-const urlVars = ['WATCH_SITE_URL1', 'WATCH_SITE_URL2', 'WATCH_SITE_URL3', 'WATCH_SITE_URL4'];
+const urlVars = [
+  'WATCH_SITE_URL1',
+  'WATCH_SITE_URL2',
+  'WATCH_SITE_URL3',
+  'WATCH_SITE_URL4',
+  'WATCH_SITE_URL5',
+  'WATCH_SITE_URL6',
+  'WATCH_SITE_URL7',
+  'WATCH_SITE_URL8',
+  'WATCH_SITE_URL9',
+  'WATCH_SITE_URL10',
+  'WATCH_SITE_URL11'
+];
 for (const name of urlVars) {
   const value = (process.env[name] || '').trim();
   if (!value) continue;
