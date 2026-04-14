@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { FavoriteMediaType, Favorites } from '../../../core/services/favorites';
+import { Favorites } from '../../../core/services/favorites';
+import { FavoriteMediaType } from '../../../models/favorites';
 
 @Component({
   selector: 'app-movie-card',
-  standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './movie-card.html',
   styleUrl: './movie-card.css'

@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FavoriteItem, Favorites } from '../../core/services/favorites';
+import { Favorites } from '../../core/services/favorites';
+import { FavoriteItem } from '../../models/favorites';
 import { MovieCard } from '../../shared/components/movie-card/movie-card';
 
 @Component({
   selector: 'app-favorites',
-  standalone: true,
   imports: [CommonModule, MovieCard],
   templateUrl: './favorites.html',
   styleUrl: './favorites.css'

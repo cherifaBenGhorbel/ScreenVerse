@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { FavoriteMediaType, Favorites } from '../../core/services/favorites';
+import { Favorites } from '../../core/services/favorites';
 import { Tmdb } from '../../core/services/tmdb';
+import { FavoriteMediaType } from '../../models/favorites';
 
 interface WatchProvider {
   provider_id: number;
@@ -20,7 +21,6 @@ interface WatchRegion {
 
 @Component({
   selector: 'app-detail',
-  standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './detail.html',
   styleUrl: './detail.css'

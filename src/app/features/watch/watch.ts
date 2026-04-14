@@ -1,22 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { environment } from '../../../environments/environment';
-import { MediaType, Tmdb } from '../../core/services/tmdb';
-
-interface WatchProvider {
-  provider_id: number;
-  provider_name: string;
-  logo_path: string;
-}
-
-interface WatchRegion {
-  link?: string;
-  flatrate?: WatchProvider[];
-  rent?: WatchProvider[];
-  buy?: WatchProvider[];
-}
+import { Recommendations } from '../../core/services/recommendations';
+import { Tmdb } from '../../core/services/tmdb';
+import { WatchHistory } from '../../core/services/watch-history';
+import { MediaType, TmdbMediaItem } from '../../models/tmdb';
 
 interface TvEpisode {
   episode_number: number;
@@ -29,12 +18,11 @@ interface TvEpisode {
 
 @Component({
   selector: 'app-watch',
-  standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './watch.html',
   styleUrl: './watch.css'
 })
-export class Watch implements OnInit {
+export class Watch implements OnInit, OnDestroy {
   media = signal<any>(null);
   mediaType = signal<MediaType>('movie');
   mediaId = signal<number>(0);
@@ -43,21 +31,29 @@ export class Watch implements OnInit {
   selectedServer = signal(1);
 
   watchUrl = signal<SafeResourceUrl | null>(null);
-  watchRegion = signal<WatchRegion | null>(null);
-  watchRegionCode = signal('US');
-  watchLink = signal('');
+  watchPageUrl = signal('');
+  watchPlaybackState = signal<'idle' | 'loading' | 'ready' | 'failed'>('idle');
+  watchPlaybackMessage = signal('');
 
   seasons = signal<any[]>([]);
   selectedSeason = signal<number | null>(null);
   episodes = signal<TvEpisode[]>([]);
   selectedEpisode = signal<TvEpisode | null>(null);
 
-  private siteUrl = environment.tmdb.siteUrl1.replace(/\/+$/, '');
+  watchRecommendations = signal<TmdbMediaItem[]>([]);
+  recommendationReason = signal('');
+  recommendationLoading = signal(false);
+  recommendationError = signal('');
+
+  private playbackTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  private readonly playbackTimeoutMs = 15000;
 
   constructor(
     private route: ActivatedRoute,
     private tmdb: Tmdb,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private watchHistory: WatchHistory,
+    private recommendations: Recommendations
   ) {}
 
   ngOnInit(): void {
@@ -66,6 +62,10 @@ export class Watch implements OnInit {
       const id = Number(params['id']);
       this.loadWatchPage(type, id);
     });
+  }
+
+  ngOnDestroy(): void {
+    this.clearPlaybackWatchdog();
   }
 
   async loadWatchPage(type: string, id: number): Promise<void> {
@@ -77,24 +77,25 @@ export class Watch implements OnInit {
 
     this.isLoading.set(true);
     this.errorMessage.set('');
-    this.mediaType.set(type);
+    this.mediaType.set(type as MediaType);
     this.mediaId.set(id);
     this.media.set(null);
     this.watchUrl.set(null);
-    this.watchRegion.set(null);
-    this.watchRegionCode.set('US');
-    this.watchLink.set('');
+    this.watchPageUrl.set('');
+    this.watchPlaybackState.set('idle');
+    this.watchPlaybackMessage.set('');
     this.selectedServer.set(1);
     this.seasons.set([]);
     this.selectedSeason.set(null);
     this.episodes.set([]);
     this.selectedEpisode.set(null);
+    this.watchRecommendations.set([]);
+    this.recommendationReason.set('');
+    this.recommendationError.set('');
+    this.recommendationLoading.set(true);
 
     try {
-      const [details, providers] = await Promise.all([
-        this.tmdb.getDetails(type, id),
-        this.tmdb.getWatchProviders(type as MediaType, id)
-      ]);
+      const details = await this.tmdb.getDetails(type as MediaType, id);
 
       if (!details) {
         this.errorMessage.set('Unable to load watch details. You may be offline.');
@@ -102,40 +103,31 @@ export class Watch implements OnInit {
       }
 
       this.media.set(details);
-      this.pickRegion((providers as any)?.results || {});
+      this.watchHistory.record(details, type as MediaType);
+      await this.loadWatchRecommendations(type as MediaType, id);
 
       if (type === 'movie') {
         this.updateWatchUrl(this.buildMovieWatchUrl(id, this.selectedServer()));
       }
 
       if (type === 'tv') {
-        this.watchLink.set('');
         const usableSeasons = (details?.seasons || []).filter((season: any) => Number(season?.season_number) >= 1);
         this.seasons.set(usableSeasons);
         if (usableSeasons.length > 0) {
           await this.changeSeason(Number(usableSeasons[0].season_number));
         }
       }
-    } catch (error) {
-      console.error('Failed to load watch page:', error);
+    } catch {
       this.errorMessage.set('Could not load watch page right now. Please retry.');
+      this.recommendationError.set('Could not load up-next recommendations right now.');
     } finally {
+      this.recommendationLoading.set(false);
       this.isLoading.set(false);
     }
   }
 
-  private pickRegion(providerResults: Record<string, WatchRegion>): void {
-    const preferred = ['US', 'GB', 'CA', 'AU', ...Object.keys(providerResults)];
-    const region = preferred.find(code => {
-      const row = providerResults[code];
-      return row && (row.flatrate?.length || row.rent?.length || row.buy?.length || row.link);
-    });
-
-    if (!region) return;
-
-    this.watchRegionCode.set(region);
-    this.watchRegion.set(providerResults[region]);
-    this.watchLink.set(providerResults[region]?.link || '');
+  async retryRecommendations(): Promise<void> {
+    await this.loadWatchRecommendations(this.mediaType(), this.mediaId());
   }
 
   async changeSeason(seasonNumber: number): Promise<void> {
@@ -155,8 +147,7 @@ export class Watch implements OnInit {
       } else {
         this.updateWatchUrl('');
       }
-    } catch (error) {
-      console.error('Failed to load season episodes:', error);
+    } catch {
       this.episodes.set([]);
       this.updateWatchUrl('');
     }
@@ -176,45 +167,34 @@ export class Watch implements OnInit {
     this.refreshWatchUrl();
   }
 
-  providerLogo(path: string | undefined): string {
-    return path ? `https://image.tmdb.org/t/p/w92${path}` : '';
-  }
-
   episodeImage(path: string | undefined): string {
     return path ? `https://image.tmdb.org/t/p/w780${path}` : '';
-  }
-
-  uniqueProviders(providers: WatchProvider[] | undefined): WatchProvider[] {
-    if (!providers?.length) return [];
-    const seen = new Set<number>();
-    return providers.filter(provider => {
-      if (seen.has(provider.provider_id)) return false;
-      seen.add(provider.provider_id);
-      return true;
-    });
   }
 
   title(): string {
     return this.media()?.title || this.media()?.name || 'Untitled';
   }
 
+  recommendationTitle(item: TmdbMediaItem): string {
+    return item?.title || item?.name || 'Untitled';
+  }
+
+  recommendationYear(item: TmdbMediaItem): string {
+    const date = item?.release_date || item?.first_air_date;
+    return date ? date.substring(0, 4) : 'N/A';
+  }
+
+  recommendationPoster(item: TmdbMediaItem): string {
+    const path = (item as any)?.poster_path;
+    return path ? `https://image.tmdb.org/t/p/w342${path}` : 'https://via.placeholder.com/300x450/1a1a1a/666?text=No+Poster';
+  }
+
   private buildMovieWatchUrl(movieId: number, serverNumber: number): string {
-    return `${this.getServerBaseUrl(serverNumber)}/movie/${movieId}`;
+    return `/api/watch/movie/${movieId}?server=${serverNumber}`;
   }
 
   private buildTvWatchUrl(tvId: number, seasonNumber: number, episodeNumber: number, serverNumber: number): string {
-    return `${this.getServerBaseUrl(serverNumber)}/tv/${tvId}/${seasonNumber}/${episodeNumber}`;
-  }
-
-  private getServerBaseUrl(serverNumber: number): string {
-    const serverMap: Record<number, string> = {
-      1: environment.tmdb.siteUrl1,
-      2: environment.tmdb.siteUrl2,
-      3: environment.tmdb.siteUrl3,
-      4: environment.tmdb.siteUrl4
-    };
-
-    return (serverMap[serverNumber] || this.siteUrl).replace(/\/+$/, '');
+    return `/api/watch/tv/${tvId}/${seasonNumber}/${episodeNumber}?server=${serverNumber}`;
   }
 
   private refreshWatchUrl(): void {
@@ -239,8 +219,63 @@ export class Watch implements OnInit {
   }
 
   private updateWatchUrl(url: string): void {
-    this.watchUrl.set(
-      url ? this.sanitizer.bypassSecurityTrustResourceUrl(url) : null
-    );
+    this.clearPlaybackWatchdog();
+    this.watchPageUrl.set(url);
+    this.watchUrl.set(url ? this.sanitizer.bypassSecurityTrustResourceUrl(url) : null);
+
+    if (url) {
+      this.watchPlaybackState.set('loading');
+      this.watchPlaybackMessage.set('Loading provider...');
+      this.playbackTimeoutId = setTimeout(() => {
+        if (this.watchPlaybackState() === 'loading') {
+          this.watchPlaybackState.set('failed');
+          this.watchPlaybackMessage.set('This provider may be blocking embedded playback. Open it in a new tab or try another server.');
+        }
+      }, this.playbackTimeoutMs);
+    } else {
+      this.watchPlaybackState.set('idle');
+      this.watchPlaybackMessage.set('');
+    }
+  }
+
+  onWatchFrameLoad(): void {
+    if (!this.watchPageUrl()) return;
+    this.clearPlaybackWatchdog();
+    this.watchPlaybackState.set('ready');
+    this.watchPlaybackMessage.set('');
+  }
+
+  onWatchFrameError(): void {
+    if (!this.watchPageUrl()) return;
+    this.clearPlaybackWatchdog();
+    this.watchPlaybackState.set('failed');
+    this.watchPlaybackMessage.set('The embedded player could not load. Open the stream in a new tab or switch servers.');
+  }
+
+  private clearPlaybackWatchdog(): void {
+    if (this.playbackTimeoutId !== null) {
+      clearTimeout(this.playbackTimeoutId);
+      this.playbackTimeoutId = null;
+    }
+  }
+
+  private async loadWatchRecommendations(type: MediaType, id: number): Promise<void> {
+    this.recommendationLoading.set(true);
+    this.recommendationError.set('');
+
+    try {
+      const result = await this.recommendations.getWatchRecommendations(type, id, 10);
+      this.watchRecommendations.set(result.items || []);
+      this.recommendationReason.set(result.reason || 'Suggested from your watch profile.');
+      if (!(result.items || []).length) {
+        this.recommendationError.set('No up-next recommendations yet. Watch more titles to improve matching.');
+      }
+    } catch {
+      this.watchRecommendations.set([]);
+      this.recommendationReason.set('');
+      this.recommendationError.set('Could not load up-next recommendations right now.');
+    } finally {
+      this.recommendationLoading.set(false);
+    }
   }
 }

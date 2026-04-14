@@ -1,37 +1,55 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const root = process.cwd();
 const envDir = join(root, 'src', 'environments');
+
+const loadDotEnvFile = (fileName) => {
+  const filePath = join(root, fileName);
+  if (!existsSync(filePath)) return;
+
+  const lines = readFileSync(filePath, 'utf8').split(/\r?\n/);
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+
+    const idx = line.indexOf('=');
+    if (idx <= 0) continue;
+
+    const key = line.slice(0, idx).trim();
+    let value = line.slice(idx + 1).trim();
+
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(process.env, key)) {
+      process.env[key] = value;
+    }
+  }
+};
+
+loadDotEnvFile('.env');
+loadDotEnvFile('.env.local');
 
 mkdirSync(envDir, { recursive: true });
 
 const fromEnv = (name, fallback = '') => process.env[name] || fallback;
 
 const config = {
-  apiKey: fromEnv('TMDB_API_KEY', 'REPLACE_ME'),
-  accessToken: fromEnv('TMDB_ACCESS_TOKEN', 'REPLACE_ME'),
-  baseUrl: fromEnv('TMDB_BASE_URL', 'https://api.themoviedb.org/3'),
   imageBase: fromEnv('TMDB_IMAGE_BASE', 'https://image.tmdb.org/t/p'),
   youtubeEmbed: fromEnv('TMDB_YOUTUBE_EMBED', 'https://www.youtube.com/embed/'),
-  siteUrl1: fromEnv('WATCH_SITE_URL1', 'https://api.cinezo.net/'),
-  siteUrl2: fromEnv('WATCH_SITE_URL2', 'https://111movies.net/'),
-  siteUrl3: fromEnv('WATCH_SITE_URL3', 'https://vidzen.fun/'),
-  siteUrl4: fromEnv('WATCH_SITE_URL4', 'https://vidfast.pro/')
+  apiProxyBase: fromEnv('TMDB_PROXY_BASE', '/api/tmdb'),
+  watchProxyBase: fromEnv('WATCH_PROXY_BASE', '/api/watch')
 };
 
 const ts = (isProduction) => `export const environment = {
   production: ${isProduction},
   tmdb: {
-    apiKey: '${config.apiKey}',
-    accessToken: '${config.accessToken}',
-    baseUrl: '${config.baseUrl}',
-    imageBase: '${config.imageBase}',
-    youtubeEmbed: '${config.youtubeEmbed}',
-    siteUrl1: '${config.siteUrl1}',
-    siteUrl2: '${config.siteUrl2}',
-    siteUrl3: '${config.siteUrl3}',
-    siteUrl4: '${config.siteUrl4}'
+    imageBase: ${JSON.stringify(config.imageBase)},
+    youtubeEmbed: ${JSON.stringify(config.youtubeEmbed)},
+    apiProxyBase: ${JSON.stringify(config.apiProxyBase)},
+    watchProxyBase: ${JSON.stringify(config.watchProxyBase)}
   }
 };
 `;

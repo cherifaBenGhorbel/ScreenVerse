@@ -1,15 +1,19 @@
 <div class="detail-page">
   @if (isLoading()) {
-    <div class="state-card">Loading title details...</div>
+    <div class="page-shell section-shell">
+      <div class="state-card surface-card">Loading title details...</div>
+    </div>
   } @else if (errorMessage()) {
-    <div class="state-card error" role="status" aria-live="polite">
-      <p>{{ errorMessage() }}</p>
-      <button class="retry-btn" type="button" (click)="retryLoad()">Retry</button>
+    <div class="page-shell section-shell">
+      <div class="state-card surface-card error" role="status" aria-live="polite">
+        <p>{{ errorMessage() }}</p>
+        <button class="action-button primary" type="button" (click)="retryLoad()">Retry</button>
+      </div>
     </div>
   } @else if (media()) {
     <section class="hero" [style.background-image]="'url(https://image.tmdb.org/t/p/original' + (media().backdrop_path || media().poster_path) + ')'">
       <div class="hero-mask"></div>
-      <div class="hero-content">
+      <div class="hero-content page-shell">
         <div class="hero-meta">
           <span class="pill">{{ mediaType() === 'movie' ? 'Movie' : 'TV Series' }}</span>
           <span class="pill">{{ getReleaseYear() }}</span>
@@ -21,23 +25,25 @@
         <p>{{ media().overview || 'No overview available for this title.' }}</p>
 
         <div class="hero-actions">
-          <button class="action primary" (click)="toggleFavorite()">
+          <a class="action-button primary watch-now" [routerLink]="['/watch', mediaType(), media().id]">Watch now</a>
+          <button class="action-button secondary" (click)="toggleFavorite()">
             {{ isFavorite() ? '♥ Remove Favorite' : '♡ Save Favorite' }}
           </button>
-          <a class="action secondary" routerLink="/favorites">Open Favorites</a>
+          <a class="action-button secondary" routerLink="/favorites">Open Favorites</a>
           @if (trailerWatchUrl()) {
-            <a class="action secondary" [href]="trailerWatchUrl()" target="_blank" rel="noopener noreferrer">Watch trailer</a>
+            <a class="action-button secondary" [href]="trailerWatchUrl()" target="_blank" rel="noopener noreferrer">Watch trailer</a>
           }
-          <a class="action watch-now" [routerLink]="['/watch', mediaType(), media().id]">Watch now</a>
         </div>
       </div>
     </section>
 
-    <section class="content-grid">
+    <section class="content-grid page-shell section-shell">
       <article class="main-column">
         @if (trailerUrl()) {
-          <div class="panel">
-            <h2>Official Trailer</h2>
+          <div class="panel surface-card">
+            <div class="section-heading">
+              <h2 class="section-title">Official Trailer</h2>
+            </div>
             <div class="trailer-player">
               <iframe
                 [src]="trailerUrl()"
@@ -51,8 +57,10 @@
           </div>
         }
 
-        <div class="panel">
-          <h2>Where to Watch</h2>
+        <div class="panel surface-card">
+          <div class="section-heading">
+            <h2 class="section-title">Where to Watch</h2>
+          </div>
 
           @if (watchRegion()) {
             <p class="region-label">Region: {{ watchRegionCode() }}</p>
@@ -111,8 +119,10 @@
         </div>
       </article>
 
-      <aside class="side-column panel">
-        <h2>Title Facts</h2>
+      <aside class="side-column panel surface-card">
+        <div class="section-heading">
+          <h2 class="section-title">Title Facts</h2>
+        </div>
         <div class="facts-list" role="list">
           <div class="facts-list-item" role="listitem"><span>Language</span><strong>{{ media().original_language?.toUpperCase() || 'N/A' }}</strong></div>
           <div class="facts-list-item" role="listitem"><span>Spoken</span><strong>{{ getLanguages() }}</strong></div>
@@ -155,6 +165,8 @@
       </aside>
     </section>
 
-    <a routerLink="/" class="back-btn">← Back to Home</a>
+    <div class="page-shell">
+      <a routerLink="/" class="action-button secondary back-btn">Back to Home</a>
+    </div>
   }
 </div>

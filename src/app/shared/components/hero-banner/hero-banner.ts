@@ -1,21 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener, Input, ViewChild, signal } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
-import { MediaType, Tmdb } from '../../../core/services/tmdb';
+import { Tmdb } from '../../../core/services/tmdb';
+import { MediaType } from '../../../models/tmdb';
 
 
 @Component({
   selector: 'app-hero-banner',
-  standalone: true,
   imports: [
     CommonModule,
     RouterLink,
     MatButtonModule,
     MatIconModule
   ],
+  host: {
+    '(document:keydown)': 'onDocumentKeydown($event)'
+  },
   templateUrl: './hero-banner.html',
   styleUrl: './hero-banner.css'
 })
@@ -81,6 +84,7 @@ export class HeroBanner {
     this.showTrailerModal.set(true);
     this.trailerError.set('');
 
+    // Move focus inside the modal for keyboard users.
     setTimeout(() => {
       const firstFocusable = this.trailerModal?.nativeElement.querySelector<HTMLElement>(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -123,7 +127,6 @@ export class HeroBanner {
     this.lastFocusedElement?.focus();
   }
 
-  @HostListener('document:keydown', ['$event'])
   onDocumentKeydown(event: KeyboardEvent): void {
     if (!this.showTrailerModal()) return;
 

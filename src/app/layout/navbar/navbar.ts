@@ -1,18 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Favorites } from '../../core/services/favorites';
-import { Language } from '../../core/services/language';
 import { Theme } from '../../core/services/theme';
 
 import { Tmdb } from '../../core/services/tmdb';
 
 @Component({
   selector: 'app-navbar',
-  standalone: true,
   imports: [
     CommonModule,
     RouterLink,
@@ -21,6 +19,9 @@ import { Tmdb } from '../../core/services/tmdb';
     MatButtonModule,
     MatProgressSpinnerModule
   ],
+  host: {
+    '(window:scroll)': 'onWindowScroll()'
+  },
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -30,17 +31,15 @@ export class Navbar {
   isSearching = signal<boolean>(false);
   isScrolled = signal<boolean>(false);
 
-  private searchTimeout: any;
+  private searchTimeout?: ReturnType<typeof setTimeout>;
 
   constructor(
     private tmdb: Tmdb,
     private router: Router,
     private favorites: Favorites,
-    private theme: Theme,
-    public language: Language
+    private theme: Theme
   ) {}
 
-  @HostListener('window:scroll', [])
   onWindowScroll() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     this.isScrolled.set(scrollTop > 50);
@@ -89,10 +88,6 @@ export class Navbar {
     if (this.searchTimeout) clearTimeout(this.searchTimeout);
   }
 
-  toggleLanguage(): void {
-    this.language.toggleLanguage();
-  }
-
   getPoster(item: any): string {
     const path = item?.poster_path || item?.backdrop_path;
     if (!path) {
@@ -111,10 +106,6 @@ export class Navbar {
 
   toggleTheme(): void {
     this.theme.toggleTheme();
-  }
-
-  isFrench(): boolean {
-    return this.language.isFrench();
   }
 
   private async runSearch(query: string): Promise<void> {
@@ -137,6 +128,6 @@ export class Navbar {
   }
 
   mediaLabel(result: any): string {
-    return result?.media_type === 'movie' ? this.language.t('nav.movies') : this.language.t('nav.tvShows');
+    return result?.media_type === 'movie' ? 'Movies' : 'TV Shows';
   }
 }

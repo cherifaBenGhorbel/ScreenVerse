@@ -3,27 +3,33 @@ import { Component, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { HeroBanner } from './../../shared/components/hero-banner/hero-banner';
 
-import { Language } from '../../core/services/language';
+import { Recommendations } from '../../core/services/recommendations';
 import { Tmdb } from '../../core/services/tmdb';
+import { TmdbMediaItem } from '../../models/tmdb';
 import { MovieCard } from '../../shared/components/movie-card/movie-card';
+
+interface MoodOption {
+  name: string;
+  genreId: number;
+  type: 'movie' | 'tv';
+}
 
 @Component({
   selector: 'app-home',
-  standalone: true,
   imports: [CommonModule, RouterLink, MovieCard, HeroBanner],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
 export class Home implements OnInit {
 
-  trending = signal<any[]>([]);
-  popularMovies = signal<any[]>([]);
-  popularTv = signal<any[]>([]);
-  topAnime = signal<any[]>([]);
+  trending = signal<TmdbMediaItem[]>([]);
+  popularMovies = signal<TmdbMediaItem[]>([]);
+  popularTv = signal<TmdbMediaItem[]>([]);
+  topAnime = signal<TmdbMediaItem[]>([]);
   isLoading = signal(true);
   loadError = signal('');
 
-  moods = [
+  moods: MoodOption[] = [
     { name: 'Comedy', genreId: 35, type: 'movie' },
     { name: 'Action', genreId: 28, type: 'movie' },
     { name: 'Romance', genreId: 10749, type: 'movie' },
@@ -32,12 +38,22 @@ export class Home implements OnInit {
     { name: 'Animation', genreId: 16, type: 'tv' }
   ];
 
-  selectedMood = signal<any>(null);
-  moodRecommendations = signal<any[]>([]);
+  selectedMood = signal<MoodOption | null>(null);
+  moodRecommendations = signal<TmdbMediaItem[]>([]);
   moodLoading = signal(false);
   moodError = signal('');
 
-  constructor(private tmdbService: Tmdb, public language: Language) { }
+  personalizedRecommendations = signal<TmdbMediaItem[]>([]);
+  personalizedReason = signal('');
+  personalizedHint = signal('');
+  personalizedLoading = signal(false);
+  personalizedError = signal('');
+
+  constructor(
+    private tmdbService: Tmdb,
+    private recommendations: Recommendations
+  ) {
+  }
 
   ngOnInit(): void {
     this.loadHomeData();
@@ -64,6 +80,7 @@ export class Home implements OnInit {
       this.popularMovies.set(movies);
       this.popularTv.set(shows);
       this.topAnime.set(anime);
+      await this.loadPersonalizedRecommendations();
 
       if (!trending.length && !movies.length && !shows.length && !anime.length) {
         this.loadError.set(
@@ -84,7 +101,7 @@ export class Home implements OnInit {
     }
   }
 
-  async selectMood(mood: any) {
+  async selectMood(mood: MoodOption) {
     this.selectedMood.set(mood);
     this.moodLoading.set(true);
     this.moodError.set('');
@@ -121,6 +138,37 @@ export class Home implements OnInit {
     const mood = this.selectedMood();
     if (!mood) return;
     this.selectMood(mood);
+  }
+
+  async loadPersonalizedRecommendations(): Promise<void> {
+    this.personalizedLoading.set(true);
+    this.personalizedHint.set('');
+    this.personalizedError.set('');
+
+    try {
+      const result = await this.recommendations.getHomeRecommendations(10);
+      this.personalizedRecommendations.set(result.items || []);
+      this.personalizedReason.set(result.reason || 'Suggested from your watch activity.');
+
+      if (!(result.items || []).length) {
+        this.personalizedHint.set('Start watching from any detail page and we will generate recommendations here.');
+      }
+    } catch (error) {
+      console.error('Error loading personalized recommendations:', error);
+      this.personalizedRecommendations.set([]);
+      this.personalizedReason.set('');
+      this.personalizedError.set(
+        navigator.onLine
+          ? 'Could not load personalized recommendations right now.'
+          : 'You are offline. Reconnect to load personalized recommendations.'
+      );
+    } finally {
+      this.personalizedLoading.set(false);
+    }
+  }
+
+  retryPersonalizedLoad(): void {
+    this.loadPersonalizedRecommendations();
   }
 
   scrollCarousel(direction: 'prev' | 'next', carouselWrapper: HTMLElement): void {

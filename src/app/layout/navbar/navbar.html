@@ -5,10 +5,10 @@
     </a>
 
     <div class="nav-links">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ language.t('nav.home') }}</a>
-      <a routerLink="/movies" routerLinkActive="active">{{ language.t('nav.movies') }}</a>
-      <a routerLink="/tv-shows" routerLinkActive="active">{{ language.t('nav.tvShows') }}</a>
-      <a routerLink="/favorites" routerLinkActive="active">{{ language.t('nav.favorites') }} @if (getFavoritesCount() > 0) {<span>({{ getFavoritesCount() }})</span>}</a>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      <a routerLink="/movies" routerLinkActive="active">Movies</a>
+      <a routerLink="/tv-shows" routerLinkActive="active">TV Shows</a>
+      <a routerLink="/favorites" routerLinkActive="active">Favorites @if (getFavoritesCount() > 0) {<span>({{ getFavoritesCount() }})</span>}</a>
     </div>
 
     <div class="search-container">
@@ -20,15 +20,15 @@
         <input
           type="text"
           aria-label="Search"
-          title="{{ language.t('nav.searchAria') }}"
-          placeholder="{{ language.t('nav.searchPlaceholder') }}"
+          title="Search movies and TV shows"
+          placeholder="Search by title or need..."
           [value]="searchQuery()"
           (input)="onSearch($event)"
           (keyup.enter)="performSearch()"
           class="search-input">
 
         @if (searchQuery().trim().length > 0) {
-          <button class="clear-btn" (click)="clearSearch()" mat-icon-button [attr.aria-label]="language.t('nav.clearSearch')" [title]="language.t('nav.clearSearch')">
+          <button class="clear-btn" (click)="clearSearch()" mat-icon-button aria-label="Clear search" title="Clear search">
             <mat-icon>close</mat-icon>
           </button>
         }
@@ -43,7 +43,7 @@
           @if (isSearching()) {
             <div class="search-loading">
               <mat-spinner diameter="24"></mat-spinner>
-              <span>{{ language.t('nav.searching') }}</span>
+              <span>Searching...</span>
             </div>
           } @else if (searchResults().length > 0) {
             @for (result of searchResults(); track result.id) {
@@ -68,8 +68,8 @@
           } @else {
             <div class="no-results">
               <mat-icon class="no-results-icon">search_off</mat-icon>
-              <p>{{ language.t('nav.noResults') }} "<strong>{{ searchQuery() }}</strong>"</p>
-              <small>{{ language.t('nav.tryAgain') }}</small>
+              <p>No results found for "<strong>{{ searchQuery() }}</strong>"</p>
+              <small>Try a different title or a quick category like K-drama or Turkish series</small>
             </div>
           }
         </div>
@@ -79,19 +79,10 @@
     <div class="nav-actions">
       <button
         mat-icon-button
-        class="lang-btn"
-        (click)="toggleLanguage()"
-        [attr.aria-label]="isFrench() ? language.t('nav.switchToEnglishAria') : language.t('nav.switchToFrenchAria')"
-        [title]="isFrench() ? language.t('nav.switchToEnglishAria') : language.t('nav.switchToFrenchAria')">
-        {{ isFrench() ? language.t('nav.switchToEnglish') : language.t('nav.switchToFrench') }}
-      </button>
-
-      <button
-        mat-icon-button
         class="theme-btn"
         (click)="toggleTheme()"
-        [attr.aria-label]="isLightTheme() ? language.t('nav.darkTheme') : language.t('nav.lightTheme')"
-        [title]="isLightTheme() ? language.t('nav.darkTheme') : language.t('nav.lightTheme')">
+        [attr.aria-label]="isLightTheme() ? 'Use dark theme' : 'Use light theme'"
+        [title]="isLightTheme() ? 'Use dark theme' : 'Use light theme'">
         <mat-icon>{{ isLightTheme() ? 'dark_mode' : 'light_mode' }}</mat-icon>
       </button>
     </div>

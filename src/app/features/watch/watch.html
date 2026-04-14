@@ -46,33 +46,44 @@
             Server 4
           </button>
         </div>
-        @if (watchUrl()) {
+        @if (watchPlaybackState() === 'failed') {
+          <div class="player-fallback" role="status" aria-live="polite">
+            <p>{{ watchPlaybackMessage() || 'This provider blocked embedded playback.' }}</p>
+            @if (watchPageUrl()) {
+              <a class="retry-btn primary" [href]="watchPageUrl()" target="_blank" rel="noreferrer noopener">Open in new tab</a>
+            }
+            <p class="muted small">Switch servers if the provider still refuses playback.</p>
+          </div>
+        } @else if (watchUrl()) {
           <div class="video-frame">
             <iframe
               [src]="watchUrl()"
               title="Watch page"
               [attr.aria-label]="title() + ' watch page'"
+              (load)="onWatchFrameLoad()"
+              (error)="onWatchFrameError()"
               frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen>
             </iframe>
+            @if (watchPlaybackState() === 'loading') {
+              <div class="player-overlay" role="status" aria-live="polite">
+                <p>{{ watchPlaybackMessage() || 'Loading provider...' }}</p>
+              </div>
+            }
           </div>
         } @else {
-          <p class="muted">Select a season and episode to load the watch page.</p>
+          @if (mediaType() === 'tv') {
+            <p class="muted">Select a season and episode to load the watch page.</p>
+          } @else {
+            <p class="muted">Use a different server if this movie stream is unavailable.</p>
+          }
         }
-
-        @if (watchLink()) {
-          <a class="watch-now" [href]="watchLink()" target="_blank" rel="noopener noreferrer">Open provider watch page</a>
-          <p class="muted small">This opens the official provider for your region.</p>
-        }
-
-
       </article>
 
-      <aside class="controls-panel panel">
-        <h2>Watch Controls</h2>
-
-        @if (mediaType() === 'tv') {
+      @if (mediaType() === 'tv') {
+        <aside class="controls-panel panel">
+          <h2>Watch Controls</h2>
           <label class="control-label" for="seasonSelect">Season</label>
           <select
             id="seasonSelect"
@@ -117,54 +128,41 @@
               }
             </div>
           }
-        } @else {
-          <p class="muted">This title is a movie, so there are no season or episode controls.</p>
-        }
-      </aside>
+        </aside>
+      }
     </section>
 
-    <section class="panel providers-panel">
-      <h2>Where to Watch</h2>
-      @if (watchRegion()) {
-        <p class="muted">Region: {{ watchRegionCode() }}</p>
-
-        @if (uniqueProviders(watchRegion()?.flatrate).length > 0) {
-          <h3>Subscription</h3>
-          <div class="providers-grid">
-            @for (provider of uniqueProviders(watchRegion()?.flatrate); track provider.provider_id) {
-              <div class="provider-chip">
-                <img [src]="providerLogo(provider.logo_path)" [alt]="provider.provider_name + ' logo'" title="Provider logo" loading="lazy">
-                <span>{{ provider.provider_name }}</span>
-              </div>
-            }
-          </div>
+    <section class="panel recommendations-panel">
+      <div class="recommendations-header">
+        <h2>Up Next For You</h2>
+        @if (recommendationReason()) {
+          <p class="muted small">{{ recommendationReason() }}</p>
         }
+      </div>
 
-        @if (uniqueProviders(watchRegion()?.rent).length > 0) {
-          <h3>Rent</h3>
-          <div class="providers-grid">
-            @for (provider of uniqueProviders(watchRegion()?.rent); track provider.provider_id) {
-              <div class="provider-chip">
-                <img [src]="providerLogo(provider.logo_path)" [alt]="provider.provider_name + ' logo'" title="Provider logo" loading="lazy">
-                <span>{{ provider.provider_name }}</span>
+      @if (recommendationLoading()) {
+        <p class="muted">Loading recommendations...</p>
+      } @else if (watchRecommendations().length > 0) {
+        <div class="recommendations-strip" role="list" aria-label="Recommended next titles">
+          @for (item of watchRecommendations(); track item.id + '-' + (item.media_type || 'movie')) {
+            <a
+              class="recommendation-item"
+              role="listitem"
+              [routerLink]="['/detail', (item.media_type || 'movie'), item.id]"
+              [attr.aria-label]="'Open details for ' + recommendationTitle(item)">
+              <img [src]="recommendationPoster(item)" [alt]="'Poster for ' + recommendationTitle(item)" title="Recommendation poster" loading="lazy">
+              <div class="recommendation-meta">
+                <strong>{{ recommendationTitle(item) }}</strong>
+                <span>{{ recommendationYear(item) }}</span>
               </div>
-            }
-          </div>
-        }
-
-        @if (uniqueProviders(watchRegion()?.buy).length > 0) {
-          <h3>Buy</h3>
-          <div class="providers-grid">
-            @for (provider of uniqueProviders(watchRegion()?.buy); track provider.provider_id) {
-              <div class="provider-chip">
-                <img [src]="providerLogo(provider.logo_path)" [alt]="provider.provider_name + ' logo'" title="Provider logo" loading="lazy">
-                <span>{{ provider.provider_name }}</span>
-              </div>
-            }
-          </div>
-        }
+            </a>
+          }
+        </div>
       } @else {
-        <p class="muted">No providers found for this title right now.</p>
+        <div class="recommendation-empty">
+          <p class="muted">{{ recommendationError() || 'No recommendations available yet.' }}</p>
+          <button type="button" class="retry-inline" (click)="retryRecommendations()">Retry recommendations</button>
+        </div>
       }
     </section>
   }

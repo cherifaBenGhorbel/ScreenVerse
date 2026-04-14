@@ -4,8 +4,8 @@
   display: block;
   text-decoration: none;
   color: inherit;
-  background: linear-gradient(135deg, #1a1a1a 0%, #141414 100%);
-  border-radius: 12px;
+  background: linear-gradient(135deg, var(--surface-elevated) 0%, var(--surface-solid) 100%);
+  border-radius: var(--radius-card);
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
@@ -19,14 +19,14 @@
 }
 
 .movie-card-link:focus-visible {
-  outline: 2px solid #e50914;
+  outline: 2px solid var(--accent);
   outline-offset: -2px;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
 }
 
 .movie-card:hover {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-strong);
 }
 
 /* Poster Container */
@@ -34,7 +34,7 @@
   position: relative;
   overflow: hidden;
   aspect-ratio: 2/3;
-  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface-elevated) 100%);
 }
 
 .favorite-btn {
@@ -42,11 +42,11 @@
   top: 10px;
   left: 10px;
   z-index: 3;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(15, 15, 15, 0.75);
+  border: 1px solid var(--border-soft);
+  background: rgba(5, 8, 15, 0.72);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  color: #f7f7f7;
+  color: var(--title-color);
   width: 34px;
   height: 34px;
   border-radius: 999px;
@@ -60,18 +60,39 @@
 }
 
 .favorite-btn:focus-visible {
-  outline: 2px solid #e50914;
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
 .favorite-btn:hover {
   transform: scale(1.06);
-  border-color: rgba(255, 255, 255, 0.6);
+  border-color: var(--border-strong);
 }
 
 .favorite-btn.active {
-  background: rgba(229, 9, 20, 0.85);
-  border-color: rgba(229, 9, 20, 0.95);
+  background: rgba(229, 9, 20, 0.88);
+  border-color: rgba(229, 9, 20, 0.98);
+}
+
+/* Ensure the heart icon remains readable over bright posters in light theme */
+:host-context(body[data-theme='light']) .favorite-btn {
+  color: #ffffff;
+  background: rgba(8, 12, 20, 0.78);
+  border-color: rgba(15, 23, 42, 0.4);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.24);
+}
+
+:host-context(body[data-theme='light']) .favorite-btn:hover {
+  background: rgba(12, 18, 30, 0.86);
+  border-color: rgba(214, 40, 40, 0.55);
+}
+
+:host-context(body[data-theme='light']) .favorite-btn.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, #b81d24 0%, #d62828 100%);
+  border-color: rgba(214, 40, 40, 0.96);
+  box-shadow: 0 8px 16px rgba(214, 40, 40, 0.28);
 }
 
 .poster {
@@ -90,10 +111,10 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(4, 6, 12, 0.84);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  color: #ffd700;
+  color: #ffd26a;
   font-weight: 700;
   font-size: 0.85rem;
   padding: 4px 10px;
@@ -117,7 +138,7 @@
 /* Card Info */
 .card-info {
   padding: 1rem;
-  background: linear-gradient(180deg, #1a1a1a 0%, #141414 100%);
+  background: linear-gradient(180deg, var(--surface-elevated) 0%, var(--surface-solid) 100%);
 }
 
 .card-title {
@@ -129,13 +150,13 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  color: #ffffff;
+  color: var(--title-color);
   min-height: 2.5em;
   transition: color 0.2s ease;
 }
 
 .movie-card:hover .card-title {
-  color: #e50914;
+  color: var(--accent);
 }
 
 /* Card Meta */
@@ -144,17 +165,17 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.75rem;
-  color: #999;
+  color: var(--text-muted);
 }
 
 .content-type {
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: rgba(229, 9, 20, 0.15);
+  background: rgba(229, 9, 20, 0.14);
   padding: 2px 8px;
   border-radius: 12px;
-  color: #e50914;
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -166,7 +187,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.8) 100%);
+  background: linear-gradient(180deg, transparent 50%, rgba(2, 6, 23, 0.82) 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
@@ -191,7 +212,7 @@
 
 @media (max-width: 768px) {
   .movie-card {
-    border-radius: 10px;
+    border-radius: 14px;
   }
   
   .card-info {

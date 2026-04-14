@@ -1,20 +1,27 @@
-# Build output and dependencies
-/dist
-/tmp
-/out-tsc
-/bazel-out
-/node_modules
-/.angular/cache
+# Dependencies and build output
+node_modules/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+.angular/cache/
+.netlify/
 
-# Logs and caches
-npm-debug.log
-yarn-error.log
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
+# Coverage and logs
+coverage/
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 testem.log
-/typings
+libpeerconnection.log
+
+# Environment files
+.env
+.env.*
+!.env.example
+src/environments/environment.ts
+src/environments/environment.prod.ts
 
 # IDE and OS files
 .idea/
@@ -25,32 +32,11 @@ testem.log
 .settings/
 *.sublime-workspace
 .vscode/
-.history/*
+.history/
 .DS_Store
 Thumbs.db
 
-# Keep only essential project files visible in repository
-/*
-!/.gitignore
-!/.editorconfig
-!/.prettierrc
-!/README.md
-!/netlify.toml
-!/package.json
-!/package-lock.json
-!/angular.json
-!/tsconfig.json
-!/tsconfig.app.json
-!/tsconfig.spec.json
-!/scripts/
-!/scripts/**
-!/public/
-!/public/**
-!/src/
-!/src/**
-
-# Environment configs (keep secrets out of git)
-/src/environments/environment*.ts
-!/src/environments/environment.example.ts
-!/src/environments/environment.ts
-!/src/environments/environment.prod.ts
+# Misc caches
+.sass-cache/
+connect.lock
+typings/

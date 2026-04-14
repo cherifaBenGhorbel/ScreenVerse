@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
-import { DiscoverFilters, Tmdb } from '../../core/services/tmdb';
+import { Tmdb } from '../../core/services/tmdb';
+import { DiscoverFilters } from '../../models/tmdb';
 import { MovieCard } from '../../shared/components/movie-card/movie-card';
 
 @Component({
   selector: 'app-tv-shows',
-  standalone: true,
   imports: [CommonModule, MovieCard],
   templateUrl: './tv-shows.html',
   styleUrl: './tv-shows.css',

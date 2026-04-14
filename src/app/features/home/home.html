@@ -1,182 +1,223 @@
 @if (isLoading()) {
-  <section class="section section-state">
-    <div class="state-card">{{ language.t('home.loading') }}</div>
+  <section class="page-shell section-shell section-state">
+    <div class="state-card surface-card">Loading home content...</div>
   </section>
 } @else if (loadError()) {
-  <section class="section section-state">
-    <div class="state-card error">
+  <section class="page-shell section-shell section-state">
+    <div class="state-card surface-card error">
       <p>{{ loadError() }}</p>
-      <button class="retry-btn" type="button" (click)="retryHomeLoad()">{{ language.t('home.retry') }}</button>
+      <button class="action-button primary" type="button" (click)="retryHomeLoad()">Retry</button>
     </div>
   </section>
 } @else {
   <!-- HERO BANNER -->
-  <app-hero-banner 
-    [trending]="trending()">
-  </app-hero-banner>
+  <app-hero-banner [trending]="trending()"></app-hero-banner>
 
-<!-- MOOD DISCOVERY SECTION -->
-<section class="mood-section">
-  <div class="section-header center">
-    <div>
-      <h2>{{ language.t('home.findYourVibe') }}</h2>
-      <p class="section-subtitle">{{ language.t('home.moodHint') }}</p>
-    </div>
-  </div>
-  
-  <div class="mood-pills">
-    @for (mood of moods; track mood.name) {
-      <button 
-        class="mood-pill" 
-        [class.active]="selectedMood()?.name === mood.name"
-        (click)="selectMood(mood)">
-        {{ mood.name }}
-      </button>
-    }
-  </div>
-</section>
-
-<!-- MOOD RECOMMENDATIONS -->
-@if (selectedMood() && moodRecommendations().length > 0) {
-  <section class="section">
-    <div class="section-header">
+  <!-- MOOD DISCOVERY SECTION -->
+  <section class="page-shell section-shell mood-section">
+    <div class="section-heading centered">
       <div>
-        <h2>{{ selectedMood()!.name }} Picks</h2>
-        <p class="section-subtitle">Curated just for your {{ selectedMood()!.name | lowercase }} mood</p>
+        <h2 class="section-title">Find Your Vibe</h2>
+        <p class="section-subtitle">Choose a mood and discover your next favorite</p>
       </div>
-      <a routerLink="/movies" class="see-all">Explore more →</a>
     </div>
-    
+
+    <div class="mood-pills">
+      @for (mood of moods; track mood.name) {
+        <button
+          class="mood-pill"
+          [class.active]="selectedMood()?.name === mood.name"
+          (click)="selectMood(mood)">
+          {{ mood.name }}
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- MOOD RECOMMENDATIONS -->
+  @if (selectedMood() && moodRecommendations().length > 0) {
+    <section class="page-shell section-shell section">
+      <div class="section-heading">
+        <div>
+          <h2 class="section-title">{{ selectedMood()!.name }} Picks</h2>
+          <p class="section-subtitle">Curated just for your {{ selectedMood()!.name | lowercase }} mood</p>
+        </div>
+        <a routerLink="/movies" class="action-button secondary">Explore more</a>
+      </div>
+
+      <div class="carousel-container">
+        <button class="nav-btn prev" (click)="scrollCarousel('prev', carouselMood)" aria-label="Scroll mood picks left" title="Scroll left">‹</button>
+        <div class="carousel-wrapper" #carouselMood>
+          <div class="carousel">
+            @for (item of moodRecommendations(); track item.id) {
+              <app-movie-card
+                [item]="item"
+                [type]="selectedMood()!.type">
+              </app-movie-card>
+            }
+          </div>
+        </div>
+        <button class="nav-btn next" (click)="scrollCarousel('next', carouselMood)" aria-label="Scroll mood picks right" title="Scroll right">›</button>
+      </div>
+    </section>
+  } @else if (selectedMood() && moodLoading()) {
+    <section class="page-shell section-shell section-state">
+      <div class="state-card surface-card">Loading mood recommendations...</div>
+    </section>
+  } @else if (selectedMood() && moodError()) {
+    <section class="page-shell section-shell section-state">
+      <div class="state-card surface-card error">
+        <p>{{ moodError() }}</p>
+        <button class="action-button primary" type="button" (click)="retryMoodLoad()">Retry mood picks</button>
+      </div>
+    </section>
+  }
+
+  @if (personalizedRecommendations().length > 0) {
+    <section class="page-shell section-shell section">
+      <div class="section-heading">
+        <div>
+          <h2 class="section-title">Because You Watched</h2>
+          <p class="section-subtitle">{{ personalizedReason() }}</p>
+        </div>
+        <a routerLink="/movies" class="action-button secondary">Find more</a>
+      </div>
+
+      <div class="carousel-container">
+        <button class="nav-btn prev" (click)="scrollCarousel('prev', carouselPersonalized)" aria-label="Scroll personalized recommendations left" title="Scroll left">‹</button>
+        <div class="carousel-wrapper" #carouselPersonalized>
+          <div class="carousel">
+            @for (item of personalizedRecommendations(); track item.id + '-' + item.media_type) {
+              <app-movie-card
+                [item]="item"
+                [type]="item.media_type || 'movie'">
+              </app-movie-card>
+            }
+          </div>
+        </div>
+        <button class="nav-btn next" (click)="scrollCarousel('next', carouselPersonalized)" aria-label="Scroll personalized recommendations right" title="Scroll right">›</button>
+      </div>
+    </section>
+  } @else if (personalizedLoading()) {
+    <section class="page-shell section-shell section-state">
+      <div class="state-card surface-card">Loading personalized recommendations...</div>
+    </section>
+  } @else if (personalizedError()) {
+    <section class="page-shell section-shell section-state">
+      <div class="state-card surface-card error">
+        <p>{{ personalizedError() }}</p>
+        <button class="action-button primary" type="button" (click)="retryPersonalizedLoad()">Retry recommendations</button>
+      </div>
+    </section>
+  } @else if (personalizedHint()) {
+    <section class="page-shell section-shell section-state">
+      <div class="state-card surface-card info">
+        <p>{{ personalizedHint() }}</p>
+      </div>
+    </section>
+  }
+
+  <!-- TRENDING NOW -->
+  <section class="page-shell section-shell section">
+    <div class="section-heading">
+      <div>
+        <h2 class="section-title">Trending Now</h2>
+        <p class="section-subtitle">What everyone's watching this week</p>
+      </div>
+      <a routerLink="/movies" class="action-button secondary">View all</a>
+    </div>
+
     <div class="carousel-container">
-      <button class="nav-btn prev" (click)="scrollCarousel('prev', carouselMood)" aria-label="Scroll mood picks left" title="Scroll left">‹</button>
-      <div class="carousel-wrapper" #carouselMood>
+      <button class="nav-btn prev" (click)="scrollCarousel('prev', carouselTrending)" aria-label="Scroll trending left" title="Scroll left">‹</button>
+      <div class="carousel-wrapper" #carouselTrending>
         <div class="carousel">
-          @for (item of moodRecommendations(); track item.id) {
-            <app-movie-card 
-              [item]="item" 
-              [type]="selectedMood()!.type">
+          @for (item of trending(); track item.id) {
+            <app-movie-card
+              [item]="item"
+              [type]="item.media_type || 'movie'">
             </app-movie-card>
           }
         </div>
       </div>
-      <button class="nav-btn next" (click)="scrollCarousel('next', carouselMood)" aria-label="Scroll mood picks right" title="Scroll right">›</button>
+      <button class="nav-btn next" (click)="scrollCarousel('next', carouselTrending)" aria-label="Scroll trending right" title="Scroll right">›</button>
     </div>
   </section>
-} @else if (selectedMood() && moodLoading()) {
-  <section class="section section-state">
-    <div class="state-card">Loading mood recommendations...</div>
-  </section>
-} @else if (selectedMood() && moodError()) {
-  <section class="section section-state">
-    <div class="state-card error">
-      <p>{{ moodError() }}</p>
-      <button class="retry-btn" type="button" (click)="retryMoodLoad()">Retry mood picks</button>
-    </div>
-  </section>
-}
 
-<!-- TRENDING NOW -->
-<section class="section">
-  <div class="section-header">
-    <div>
-      <h2>{{ language.t('home.trending') }}</h2>
-      <p class="section-subtitle">{{ language.t('home.trendingHint') }}</p>
-    </div>
-    <a routerLink="/movies" class="see-all">View all →</a>
-  </div>
-  
-  <div class="carousel-container">
-    <button class="nav-btn prev" (click)="scrollCarousel('prev', carouselTrending)" aria-label="Scroll trending left" title="Scroll left">‹</button>
-    <div class="carousel-wrapper" #carouselTrending>
-      <div class="carousel">
-        @for (item of trending(); track item.id) {
-          <app-movie-card 
-            [item]="item" 
-              [type]="item.media_type || 'movie'">
-          </app-movie-card>
-        }
+  <!-- POPULAR MOVIES -->
+  <section class="page-shell section-shell section">
+    <div class="section-heading">
+      <div>
+        <h2 class="section-title">Popular Movies</h2>
+        <p class="section-subtitle">Top-rated films from around the world</p>
       </div>
+      <a routerLink="/movies" class="action-button secondary">See all movies</a>
     </div>
-    <button class="nav-btn next" (click)="scrollCarousel('next', carouselTrending)" aria-label="Scroll trending right" title="Scroll right">›</button>
-  </div>
-</section>
 
-<!-- POPULAR MOVIES -->
-<section class="section">
-  <div class="section-header">
-    <div>
-      <h2>{{ language.t('home.popularMovies') }}</h2>
-      <p class="section-subtitle">{{ language.t('home.popularMoviesHint') }}</p>
-    </div>
-    <a routerLink="/movies" class="see-all">See all movies →</a>
-  </div>
-  
-  <div class="carousel-container">
-    <button class="nav-btn prev" (click)="scrollCarousel('prev', carouselMovies)" aria-label="Scroll movies left" title="Scroll left">‹</button>
-    <div class="carousel-wrapper" #carouselMovies>
-      <div class="carousel">
-        @for (movie of popularMovies(); track movie.id) {
-          <app-movie-card 
-            [item]="movie" 
+    <div class="carousel-container">
+      <button class="nav-btn prev" (click)="scrollCarousel('prev', carouselMovies)" aria-label="Scroll movies left" title="Scroll left">‹</button>
+      <div class="carousel-wrapper" #carouselMovies>
+        <div class="carousel">
+          @for (movie of popularMovies(); track movie.id) {
+            <app-movie-card
+              [item]="movie"
               [type]="'movie'">
-          </app-movie-card>
-        }
+            </app-movie-card>
+          }
+        </div>
       </div>
+      <button class="nav-btn next" (click)="scrollCarousel('next', carouselMovies)" aria-label="Scroll movies right" title="Scroll right">›</button>
     </div>
-    <button class="nav-btn next" (click)="scrollCarousel('next', carouselMovies)" aria-label="Scroll movies right" title="Scroll right">›</button>
-  </div>
-</section>
+  </section>
 
-<!-- POPULAR TV SHOWS -->
-<section class="section">
-  <div class="section-header">
-    <div>
-      <h2>{{ language.t('home.popularTv') }}</h2>
-      <p class="section-subtitle">{{ language.t('home.popularTvHint') }}</p>
+  <!-- POPULAR TV SHOWS -->
+  <section class="page-shell section-shell section">
+    <div class="section-heading">
+      <div>
+        <h2 class="section-title">Popular TV Shows</h2>
+        <p class="section-subtitle">Binge-worthy series everyone's talking about</p>
+      </div>
+      <a routerLink="/tv-shows" class="action-button secondary">See all shows</a>
     </div>
-    <a routerLink="/tv-shows" class="see-all">See all shows →</a>
-  </div>
-  
-  <div class="carousel-container">
-    <button class="nav-btn prev" (click)="scrollCarousel('prev', carouselTv)" aria-label="Scroll TV shows left" title="Scroll left">‹</button>
-    <div class="carousel-wrapper" #carouselTv>
-      <div class="carousel">
-        @for (show of popularTv(); track show.id) {
-          <app-movie-card 
-            [item]="show" 
+
+    <div class="carousel-container">
+      <button class="nav-btn prev" (click)="scrollCarousel('prev', carouselTv)" aria-label="Scroll TV shows left" title="Scroll left">‹</button>
+      <div class="carousel-wrapper" #carouselTv>
+        <div class="carousel">
+          @for (show of popularTv(); track show.id) {
+            <app-movie-card
+              [item]="show"
               [type]="'tv'">
-          </app-movie-card>
-        }
+            </app-movie-card>
+          }
+        </div>
       </div>
+      <button class="nav-btn next" (click)="scrollCarousel('next', carouselTv)" aria-label="Scroll TV shows right" title="Scroll right">›</button>
     </div>
-    <button class="nav-btn next" (click)="scrollCarousel('next', carouselTv)" aria-label="Scroll TV shows right" title="Scroll right">›</button>
-  </div>
-</section>
+  </section>
 
+  <!-- TOP ANIME -->
+  <section class="page-shell section-shell section">
+    <div class="section-heading">
+      <div>
+        <h2 class="section-title">Top Anime</h2>
+        <p class="section-subtitle">Best Japanese animation picks</p>
+      </div>
+      <span class="section-subtitle">Browse animation in Movies and TV</span>
+    </div>
+
+    <div class="carousel-container">
+      <button class="nav-btn prev" (click)="scrollCarousel('prev', carouselAnime)" aria-label="Scroll anime left" title="Scroll left">‹</button>
+      <div class="carousel-wrapper" #carouselAnime>
+        <div class="carousel">
+          @for (anime of topAnime(); track anime.id) {
+            <app-movie-card
+              [item]="anime"
+              [type]="'tv'">
+            </app-movie-card>
+          }
+        </div>
+      </div>
+      <button class="nav-btn next" (click)="scrollCarousel('next', carouselAnime)" aria-label="Scroll anime right" title="Scroll right">›</button>
+    </div>
+  </section>
 }
-
-<!-- TOP ANIME -->
-<section class="section">
-  <div class="section-header">
-    <div>
-      <h2>{{ language.t('home.topAnime') }}</h2>
-      <p class="section-subtitle">{{ language.t('home.topAnimeHint') }}</p>
-    </div>
-    <span class="see-all">Browse animation in Movies and TV →</span>
-  </div>
-  
-  <div class="carousel-container">
-    <button class="nav-btn prev" (click)="scrollCarousel('prev', carouselAnime)" aria-label="Scroll anime left" title="Scroll left">‹</button>
-    <div class="carousel-wrapper" #carouselAnime>
-      <div class="carousel">
-        @for (anime of topAnime(); track anime.id) {
-          <app-movie-card 
-            [item]="anime" 
-              [type]="'tv'">
-          </app-movie-card>
-        }
-      </div>
-    </div>
-    <button class="nav-btn next" (click)="scrollCarousel('next', carouselAnime)" aria-label="Scroll anime right" title="Scroll right">›</button>
-  </div>
-</section>

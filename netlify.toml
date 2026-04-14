@@ -2,6 +2,21 @@
   command = "npm run build"
   publish = "dist/movie-platform/browser"
 
+[functions]
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/api/tmdb/*"
+  to = "/.netlify/functions/tmdb/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/watch/*"
+  to = "/.netlify/functions/watch/:splat"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
