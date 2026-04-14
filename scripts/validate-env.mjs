@@ -32,6 +32,21 @@ const loadDotEnvFile = (fileName) => {
 loadDotEnvFile('.env');
 loadDotEnvFile('.env.local');
 
+// Variables with defaults (optional, but good to override if needed)
+const defaults = {
+  TMDB_BASE_URL: 'https://api.themoviedb.org/3',
+  TMDB_IMAGE_BASE: 'https://image.tmdb.org/t/p',
+  TMDB_YOUTUBE_EMBED: 'https://www.youtube.com/embed/'
+};
+
+// Apply defaults if not set
+for (const [key, value] of Object.entries(defaults)) {
+  if (!process.env[key]) {
+    process.env[key] = value;
+  }
+}
+
+// CRITICAL: These must be set or build fails
 const required = [
   'TMDB_API_KEY',
   'TMDB_ACCESS_TOKEN',
@@ -49,15 +64,18 @@ const missing = required.filter((name) => {
 });
 
 if (missing.length > 0) {
-  console.error('Missing required environment variables:');
+  console.error('\n❌ Missing required environment variables:');
   for (const name of missing) {
-    console.error(`- ${name}`);
+    console.error(`   - ${name}`);
   }
-  console.error('Set these in .env/.env.local (local) or provider env settings (production).');
+  console.error('\n📍 LOCAL: Set these in .env or .env.local');
+  console.error('📍 NETLIFY: Set these via Site Settings → Environment Variables');
+  console.error('   (https://app.netlify.com/sites/YOUR_SITE/settings/env)\n');
   process.exit(1);
 }
 
-const urlVars = ['WATCH_SITE_URL1', 'WATCH_SITE_URL2', 'WATCH_SITE_URL3', 'WATCH_SITE_URL4', 'TMDB_BASE_URL'];
+// Validate that WATCH_SITE_URLs are valid HTTP(S) URLs
+const urlVars = ['WATCH_SITE_URL1', 'WATCH_SITE_URL2', 'WATCH_SITE_URL3', 'WATCH_SITE_URL4'];
 for (const name of urlVars) {
   const value = (process.env[name] || '').trim();
   if (!value) continue;
@@ -67,9 +85,9 @@ for (const name of urlVars) {
       throw new Error('Unsupported URL protocol');
     }
   } catch {
-    console.error(`Invalid URL in ${name}: ${value}`);
+    console.error(`❌ Invalid URL in ${name}: ${value}`);
     process.exit(1);
   }
 }
 
-console.log('Environment validation passed.');
+console.log('Environment validation passed.')

@@ -60,6 +60,7 @@ exports.handler = async (event) => {
 
     const upstream = await fetch(url.toString(), {
       method: 'GET',
+      cache: 'no-store',
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${tmdbAccessToken}`

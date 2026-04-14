@@ -54,18 +54,22 @@ The dev server runs Angular on `http://localhost:4300` and Netlify Functions on 
 
 1. Push the project to GitHub.
 2. Import the repository in Netlify.
-3. **Before deploying**, go to **Site Settings** → **Environment Variables** and add:
+3. **⚠️ CRITICAL:** Before deploying, go to **Site Settings** → **Environment Variables** and add **all 6 critical variables** from your `.env` file:
    - `TMDB_API_KEY`
    - `TMDB_ACCESS_TOKEN`
-   - `TMDB_BASE_URL`
-   - `TMDB_IMAGE_BASE`
-   - `TMDB_YOUTUBE_EMBED`
    - `WATCH_SITE_URL1`, `WATCH_SITE_URL2`, `WATCH_SITE_URL3`, `WATCH_SITE_URL4`
+
 4. Use build command: `npm run build`
 5. Publish directory: `dist/movie-platform/browser`
-6. Deploy.
+6. Click **Trigger Deploy** to start the build.
 
-**📘 Detailed Setup Guide:** See [NETLIFY_SETUP.md](NETLIFY_SETUP.md)
+**⏱️ Build takes ~2 minutes. Look for "Environment validation passed" in the logs.**
+
+### 🚑 If Build Fails with Missing Variables
+
+If your build failed with "Missing required environment variables" error, **see [NETLIFY_FIX.md](NETLIFY_FIX.md)** — it's a 2-minute fix.
+
+**📘 Complete Setup Guide:** [NETLIFY_SETUP.md](NETLIFY_SETUP.md)
 
 Netlify serves the app shell with SPA fallback and exposes the server-side API routes through Netlify Functions.
 
