@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { environment } from '../../../environments/environment';
 import { Recommendations } from '../../core/services/recommendations';
 import { Tmdb } from '../../core/services/tmdb';
 import { WatchHistory } from '../../core/services/watch-history';
@@ -23,6 +24,8 @@ interface TvEpisode {
   styleUrl: './watch.css'
 })
 export class Watch implements OnInit, OnDestroy {
+  private readonly watchProxyBase = environment.tmdb.watchProxyBase || '/api/watch';
+
   media = signal<any>(null);
   mediaType = signal<MediaType>('movie');
   mediaId = signal<number>(0);
@@ -190,11 +193,11 @@ export class Watch implements OnInit, OnDestroy {
   }
 
   private buildMovieWatchUrl(movieId: number, serverNumber: number): string {
-    return `/api/watch/movie/${movieId}?server=${serverNumber}`;
+    return `${this.watchProxyBase}/movie/${movieId}?server=${serverNumber}`;
   }
 
   private buildTvWatchUrl(tvId: number, seasonNumber: number, episodeNumber: number, serverNumber: number): string {
-    return `/api/watch/tv/${tvId}/${seasonNumber}/${episodeNumber}?server=${serverNumber}`;
+    return `${this.watchProxyBase}/tv/${tvId}/${seasonNumber}/${episodeNumber}?server=${serverNumber}`;
   }
 
   private refreshWatchUrl(): void {

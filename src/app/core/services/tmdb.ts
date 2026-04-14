@@ -10,6 +10,7 @@ import { DiscoverFilters, MediaType, TmdbKeyword, TmdbMediaItem, TmdbPaginatedRe
 export class Tmdb {
 
   private apiProxyBase = environment.tmdb.apiProxyBase || '/api/tmdb';
+  private readonly directFunctionBase = '/.netlify/functions/tmdb';
 
   private headers = new HttpHeaders({
     'Content-Type': 'application/json'
@@ -20,6 +21,44 @@ export class Tmdb {
 
   constructor(private http: HttpClient) { }
 
+  private isHtmlPayload(payload: string): boolean {
+    const normalized = payload.trimStart().toLowerCase();
+    return normalized.startsWith('<!doctype html') || normalized.startsWith('<html');
+  }
+
+  private getFallbackProxyBase(primaryBase: string): string | null {
+    if (primaryBase === this.directFunctionBase) {
+      return null;
+    }
+
+    if (primaryBase.startsWith('/api/tmdb')) {
+      return this.directFunctionBase + primaryBase.slice('/api/tmdb'.length);
+    }
+
+    return this.directFunctionBase;
+  }
+
+  private async fetchJson<T>(url: string): Promise<T | null> {
+    try {
+      const raw = await firstValueFrom(this.http.get(url, {
+        headers: this.headers,
+        responseType: 'text'
+      }));
+
+      if (typeof raw !== 'string' || !raw.trim()) {
+        return null;
+      }
+
+      if (this.isHtmlPayload(raw)) {
+        return null;
+      }
+
+      return JSON.parse(raw) as T;
+    } catch {
+      return null;
+    }
+  }
+
   private async request<T>(endpoint: string, fallback: T): Promise<T> {
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       return fallback;
@@ -27,13 +66,20 @@ export class Tmdb {
 
     const separator = endpoint.includes('?') ? '&' : '?';
     const endpointWithLanguage = `${endpoint}${separator}language=${encodeURIComponent(this.tmdbLanguage)}`;
-    const targetUrl = `${this.apiProxyBase}${endpointWithLanguage}`;
+    const primaryUrl = `${this.apiProxyBase}${endpointWithLanguage}`;
+    const primaryResponse = await this.fetchJson<T>(primaryUrl);
+    if (primaryResponse) {
+      return primaryResponse;
+    }
 
-    try {
-      return await firstValueFrom(this.http.get<T>(targetUrl, { headers: this.headers }));
-    } catch (error) {
+    const fallbackBase = this.getFallbackProxyBase(this.apiProxyBase);
+    if (!fallbackBase) {
       return fallback;
     }
+
+    const fallbackUrl = `${fallbackBase}${endpointWithLanguage}`;
+    const fallbackResponse = await this.fetchJson<T>(fallbackUrl);
+    return fallbackResponse || fallback;
   }
 
   // Trending (All)

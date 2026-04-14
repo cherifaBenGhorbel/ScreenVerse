@@ -39,8 +39,10 @@ const fromEnv = (name, fallback = '') => process.env[name] || fallback;
 const config = {
   imageBase: fromEnv('TMDB_IMAGE_BASE', 'https://image.tmdb.org/t/p'),
   youtubeEmbed: fromEnv('TMDB_YOUTUBE_EMBED', 'https://www.youtube.com/embed/'),
-  apiProxyBase: fromEnv('TMDB_PROXY_BASE', '/api/tmdb'),
-  watchProxyBase: fromEnv('WATCH_PROXY_BASE', '/api/watch')
+  apiProxyBaseDev: fromEnv('TMDB_PROXY_BASE_DEV', fromEnv('TMDB_PROXY_BASE', '/api/tmdb')),
+  watchProxyBaseDev: fromEnv('WATCH_PROXY_BASE_DEV', fromEnv('WATCH_PROXY_BASE', '/api/watch')),
+  apiProxyBaseProd: fromEnv('TMDB_PROXY_BASE_PROD', fromEnv('TMDB_PROXY_BASE', '/.netlify/functions/tmdb')),
+  watchProxyBaseProd: fromEnv('WATCH_PROXY_BASE_PROD', fromEnv('WATCH_PROXY_BASE', '/.netlify/functions/watch'))
 };
 
 const ts = (isProduction) => `export const environment = {
@@ -48,13 +50,24 @@ const ts = (isProduction) => `export const environment = {
   tmdb: {
     imageBase: ${JSON.stringify(config.imageBase)},
     youtubeEmbed: ${JSON.stringify(config.youtubeEmbed)},
-    apiProxyBase: ${JSON.stringify(config.apiProxyBase)},
-    watchProxyBase: ${JSON.stringify(config.watchProxyBase)}
+    apiProxyBase: ${JSON.stringify(config.apiProxyBaseDev)},
+    watchProxyBase: ${JSON.stringify(config.watchProxyBaseDev)}
+  }
+};
+`;
+
+const tsProd = `export const environment = {
+  production: true,
+  tmdb: {
+    imageBase: ${JSON.stringify(config.imageBase)},
+    youtubeEmbed: ${JSON.stringify(config.youtubeEmbed)},
+    apiProxyBase: ${JSON.stringify(config.apiProxyBaseProd)},
+    watchProxyBase: ${JSON.stringify(config.watchProxyBaseProd)}
   }
 };
 `;
 
 writeFileSync(join(envDir, 'environment.ts'), ts(false), 'utf8');
-writeFileSync(join(envDir, 'environment.prod.ts'), ts(true), 'utf8');
+writeFileSync(join(envDir, 'environment.prod.ts'), tsProd, 'utf8');
 
 console.log('Generated src/environments/environment.ts and environment.prod.ts');
