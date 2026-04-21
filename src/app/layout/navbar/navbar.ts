@@ -1,16 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { filter } from 'rxjs';
 import { Favorites } from '../../core/services/favorites';
 import { Theme } from '../../core/services/theme';
-
 import { Tmdb } from '../../core/services/tmdb';
 
 @Component({
   selector: 'app-navbar',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     RouterLink,
@@ -30,8 +32,11 @@ export class Navbar {
   searchResults = signal<any[]>([]);
   isSearching = signal<boolean>(false);
   isScrolled = signal<boolean>(false);
+  isSearchFocused = signal<boolean>(false);
 
+  private readonly destroyRef = inject(DestroyRef);
   private searchTimeout?: ReturnType<typeof setTimeout>;
+  private keepDropdownOpenOnBlur = false;
 
   constructor(
     private tmdb: Tmdb,
@@ -40,19 +45,38 @@ export class Navbar {
     private theme: Theme
   ) {}
 
+  ngOnInit(): void {
+    this.syncSearchQueryFromUrl(this.router.url);
+
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(event => {
+        this.searchResults.set([]);
+        this.isSearching.set(false);
+        this.isSearchFocused.set(false);
+        this.syncSearchQueryFromUrl(event.urlAfterRedirects);
+      });
+  }
+
   onWindowScroll() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     this.isScrolled.set(scrollTop > 50);
   }
 
-  async onSearch(event: Event) {
-    const value = (event.target as HTMLInputElement).value.trim();
+  onSearch(event: Event) {
+    const value = (event.target as HTMLInputElement).value;
     this.searchQuery.set(value);
 
-    if (this.searchTimeout) clearTimeout(this.searchTimeout);
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
 
-    if (value.length >= 2) {
-      this.searchTimeout = setTimeout(() => this.runSearch(value), 300);
+    const query = value.trim();
+    if (query.length >= 2) {
+      this.searchTimeout = setTimeout(() => void this.runSearch(query), 250);
     } else {
       this.searchResults.set([]);
       this.isSearching.set(false);
@@ -61,31 +85,28 @@ export class Navbar {
 
   async performSearch() {
     const query = this.searchQuery().trim();
-    if (query.length < 2) return;
+    if (!query) return;
 
-    // There is no dedicated search route; open the best matching result.
-    if (!this.searchResults().length) {
-      await this.runSearch(query);
-    }
-
-    const firstResult = this.searchResults()[0];
-    if (firstResult) {
-      this.goToDetail(firstResult);
-    }
-  }
-
-  goToDetail(item: any) {
-    if (!item) return;
-    const type = item.media_type;
-    this.router.navigate(['/detail', type, item.id]);
-    this.clearSearch();
+    this.searchQuery.set(query);
+    this.searchResults.set([]);
+    this.isSearchFocused.set(false);
+    await this.router.navigate(['/search'], {
+      queryParams: { q: query }
+    });
   }
 
   clearSearch() {
     this.searchQuery.set('');
     this.searchResults.set([]);
     this.isSearching.set(false);
-    if (this.searchTimeout) clearTimeout(this.searchTimeout);
+
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    if (this.router.url.startsWith('/search')) {
+      this.router.navigate(['/search']);
+    }
   }
 
   getPoster(item: any): string {
@@ -108,26 +129,88 @@ export class Navbar {
     this.theme.toggleTheme();
   }
 
+  openSearchPage(): void {
+    const query = this.searchQuery().trim();
+    if (!query) return;
+
+    this.searchResults.set([]);
+    this.isSearchFocused.set(false);
+    void this.router.navigate(['/search'], {
+      queryParams: { q: query }
+    });
+  }
+
+  goToDetail(item: any): void {
+    if (!item) return;
+
+    const type = item.media_type;
+    this.clearSearch();
+    void this.router.navigate(['/detail', type, item.id]);
+  }
+
+  mediaLabel(result: any): string {
+    return result?.media_type === 'movie' ? 'Movie' : 'TV Show';
+  }
+
+  onSearchFocus(): void {
+    this.isSearchFocused.set(true);
+  }
+
+  onSearchBlur(): void {
+    setTimeout(() => {
+      if (this.keepDropdownOpenOnBlur) {
+        this.keepDropdownOpenOnBlur = false;
+        return;
+      }
+
+      this.isSearchFocused.set(false);
+    }, 0);
+  }
+
+  onDropdownMouseDown(): void {
+    this.keepDropdownOpenOnBlur = true;
+  }
+
+  closeSearchDropdown(): void {
+    this.isSearchFocused.set(false);
+  }
+
+  private syncSearchQueryFromUrl(url: string): void {
+    if (!url.startsWith('/search')) {
+      return;
+    }
+
+    const queryString = url.split('?')[1] ?? '';
+    const params = new URLSearchParams(queryString);
+    this.searchQuery.set((params.get('q') ?? '').trim());
+
+    if (!this.searchQuery()) {
+      this.searchResults.set([]);
+      this.isSearching.set(false);
+    }
+  }
+
   private async runSearch(query: string): Promise<void> {
     this.isSearching.set(true);
 
     try {
       const response = await this.tmdb.searchMulti(query);
+      const normalizedQuery = query.toLowerCase();
 
-      const textResults = (response?.results || [])
+      const results = (response?.results || [])
         .filter((item: any) => item.media_type === 'movie' || item.media_type === 'tv')
-        .slice(0, 8);
+        .filter((item: any) => {
+          const title = (item.title || item.name || '').trim().toLowerCase();
+          return title.startsWith(normalizedQuery);
+        })
+        .slice(0, 6);
 
-      this.searchResults.set(textResults);
+      this.searchResults.set(results);
     } catch (error) {
       console.error('Search failed:', error);
       this.searchResults.set([]);
     } finally {
       this.isSearching.set(false);
     }
-  }
-
-  mediaLabel(result: any): string {
-    return result?.media_type === 'movie' ? 'Movies' : 'TV Shows';
   }
 }

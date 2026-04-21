@@ -22,9 +22,12 @@
           type="text"
           aria-label="Search"
           title="Search movies and TV shows"
-          placeholder="Search by title or need..."
+          placeholder="Search movies and TV shows"
           [value]="searchQuery()"
           (input)="onSearch($event)"
+          (focus)="onSearchFocus()"
+          (blur)="onSearchBlur()"
+          (keydown.escape)="closeSearchDropdown()"
           (keyup.enter)="performSearch()"
           class="search-input">
 
@@ -39,11 +42,11 @@
         }
       </div>
 
-      @if (searchQuery().trim().length >= 2) {
-        <div class="search-results">
+      @if (isSearchFocused() && searchQuery().trim().length >= 2) {
+        <div class="search-results surface-card" (mousedown)="onDropdownMouseDown()">
           @if (isSearching()) {
             <div class="search-loading">
-              <mat-spinner diameter="24"></mat-spinner>
+              <mat-spinner diameter="22"></mat-spinner>
               <span>Searching...</span>
             </div>
           } @else if (searchResults().length > 0) {
@@ -66,11 +69,18 @@
                 </div>
               </button>
             }
+
+            <button
+              type="button"
+              class="search-view-all"
+              (click)="openSearchPage()">
+              View all results for "{{ searchQuery().trim() }}"
+            </button>
           } @else {
             <div class="no-results">
               <mat-icon class="no-results-icon">search_off</mat-icon>
-              <p>No results found for "<strong>{{ searchQuery() }}</strong>"</p>
-              <small>Try a different title or a quick category like K-drama or Turkish series</small>
+              <p>No results found.</p>
+              <small>Try a different title or open the full search page.</small>
             </div>
           }
         </div>

@@ -22,6 +22,11 @@ export const routes: Routes = [
       .then(m => m.FavoritesPage)
   },
   {
+    path: 'search',
+    loadComponent: () => import('./features/search/search')
+      .then(m => m.SearchResultsPage)
+  },
+  {
     path: 'detail/:type/:id',
     loadComponent: () => import('./features/detail/detail')
       .then(m => m.Detail)

@@ -1,0 +1,104 @@
+<div class="catalog-page">
+  <div class="catalog-header">
+    <h1>Search Results</h1>
+    <p class="catalog-subtitle">
+      @if (searchQuery()) {
+        Showing movies and TV shows whose titles start with &ldquo;{{ searchQuery() }}&rdquo;.
+      } @else {
+        Use the navbar search and press Enter to view full results.
+      }
+    </p>
+  </div>
+
+  @if (searchQuery()) {
+    <section class="catalog-filters" aria-label="Search filters">
+      <div class="filter-group">
+        <label class="filter-label" for="searchContentType">Content type</label>
+        <select
+          id="searchContentType"
+          class="filter-select"
+          [value]="contentType()"
+          (change)="setContentType($any($event.target).value)">
+          <option value="all">All</option>
+          <option value="movie">Movies</option>
+          <option value="tv">TV Shows</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label" for="searchGenre">Genre</label>
+        <select
+          id="searchGenre"
+          class="filter-select"
+          [value]="selectedGenre()"
+          (change)="setGenre($any($event.target).value)">
+          @for (option of genreOptions(); track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label" for="searchYear">Release year</label>
+        <input
+          id="searchYear"
+          type="text"
+          class="field-select"
+          inputmode="numeric"
+          maxlength="4"
+          placeholder="Any year"
+          [value]="selectedYear()"
+          (input)="setYear($any($event.target).value)">
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label" for="searchRating">Rating</label>
+        <select
+          id="searchRating"
+          class="filter-select"
+          [value]="selectedRating()"
+          (change)="setRating($any($event.target).value)">
+          @for (option of ratingOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </div>
+
+      <button class="filter-reset" type="button" (click)="clearFiltersOnly()" [disabled]="!hasActiveFilters()">
+        Reset filters
+      </button>
+    </section>
+  }
+
+  @if (isLoading()) {
+    <div class="catalog-loading" role="status" aria-live="polite">Searching...</div>
+  } @else if (!searchQuery()) {
+    <div class="catalog-empty state-card" role="status" aria-live="polite">
+      <p>Type a movie or TV show title and press Enter to see matching results.</p>
+    </div>
+  } @else if (searchError()) {
+    <div class="catalog-empty state-card error" role="status" aria-live="polite">
+      <p>{{ searchError() }}</p>
+      <button class="retry-btn" type="button" (click)="retrySearch()">Retry</button>
+    </div>
+  } @else if (filteredResults().length > 0) {
+    <div class="search-results-meta" aria-label="Result count">
+      <p>{{ filteredResults().length }} result{{ filteredResults().length === 1 ? '' : 's' }}</p>
+    </div>
+
+    <div class="catalog-grid">
+      @for (item of filteredResults(); track item.id) {
+        <app-movie-card [item]="item" [type]="item.media_type === 'tv' ? 'tv' : 'movie'"></app-movie-card>
+      }
+    </div>
+  } @else {
+    <div class="catalog-empty state-card" role="status" aria-live="polite">
+      @if (hasFilterOnlyNoMatch()) {
+        <p>No results match your current filters.</p>
+      } @else {
+        <p>No results found.</p>
+      }
+      <button class="retry-btn" type="button" (click)="clearFiltersOnly()" [disabled]="!hasActiveFilters()">Clear filters</button>
+    </div>
+  }
+</div>
